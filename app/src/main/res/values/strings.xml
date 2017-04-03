@@ -7,5 +7,6 @@
     <string name="orders_name">Órdenes</string>
     <string name="logs_name">Reportes</string>
 
+    <string name="productscategory_id">Categoría: </string>
     <string name="productscategory_description">Descripción: </string>
 </resources>

@@ -16,24 +16,43 @@ import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
 import com.fiuady.compustore.db.ProductCategories;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class CategoriesActivity extends AppCompatActivity {
 
     private Inventory inventory;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        inventory = new Inventory(getApplicationContext());
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_categories);
+        recyclerView=(RecyclerView)findViewById(R.id.categories_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+
+        adapter = new ProductCategoryAdapter(inventory.getAllProductCategories());
+        recyclerView.setAdapter(adapter);
+
+    }
 
     private class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private TextView txtDescription;
+        private TextView txtId;
         public ProductCategoryHolder (View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
+            txtId=(TextView) itemView.findViewById(R.id.productcategory_id_text);
             txtDescription=(TextView)itemView.findViewById(R.id.productcategory_text);
         }
 
         public void bindProductCategory(ProductCategories productCategory)
         {
+            txtId.setText(Integer.toString(productCategory.getId()));
             txtDescription.setText(productCategory.getDescription());
         }
 
@@ -71,19 +90,7 @@ public class CategoriesActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProductCategoryAdapter adapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_categories);
-        recyclerView=(RecyclerView)findViewById(R.id.categories_recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        inventory = new Inventory(getApplicationContext());
-
-        adapter = new ProductCategoryAdapter(inventory.getAllProductCategories());
-        recyclerView.setAdapter(adapter);
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

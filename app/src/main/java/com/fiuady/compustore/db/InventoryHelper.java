@@ -61,6 +61,7 @@ public final class InventoryHelper extends SQLiteOpenHelper {
     {
         BufferedReader br=null;
         try{
+
             InputStream is = context.getAssets().open(filename);
             br = new BufferedReader(new InputStreamReader(is));
 
