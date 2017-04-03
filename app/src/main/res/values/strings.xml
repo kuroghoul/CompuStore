@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">CompuStore</string>
+    <string name="categories_name">Categorías</string>
+    <string name="products_name">Productos</string>
+    <string name="assemblies_name">Ensambles</string>
+    <string name="clients_name">Clientes</string>
+    <string name="orders_name">Órdenes</string>
+    <string name="logs_name">Reportes</string>
+
+    <string name="productscategory_description">Descripción: </string>
 </resources>
