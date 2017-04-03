@@ -9,4 +9,8 @@
 
     <string name="productscategory_id">Categoría: </string>
     <string name="productscategory_description">Descripción: </string>
+
+    <string name="dialog_add_button">Agregar</string>
+    <string name="dialog_cancel_button">Cancelar</string>
+    <string name="dialog_hint_description">Descripción</string>
 </resources>

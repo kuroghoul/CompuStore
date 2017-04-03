@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/steve"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/zombie"
             android:scaleType="fitXY"
             android:padding="5dp"
 
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/creeper"
             android:scaleType="fitXY"
             android:padding="5dp"
 
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/spider"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/skeleton"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/test2"
+            android:src="@drawable/cow"
             android:scaleType="fitXY"
             android:padding="5dp"
             />

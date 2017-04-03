@@ -1,5 +1,7 @@
 package com.fiuady.compustore.android.compustore;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,12 +22,19 @@ import org.w3c.dom.Text;
 
 import java.util.List;
 
-public class CategoriesActivity extends AppCompatActivity {
+public class CategoriesActivity extends AppCompatActivity implements DialogNewCategory.DialogNewCategoryListener {
 
     private Inventory inventory;
+
+
+
+
+    private DialogNewCategory dialogNewCategory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         inventory = new Inventory(getApplicationContext());
+        dialogNewCategory = new DialogNewCategory();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
         recyclerView=(RecyclerView)findViewById(R.id.categories_recyclerView);
@@ -36,6 +45,15 @@ public class CategoriesActivity extends AppCompatActivity {
         adapter = new ProductCategoryAdapter(inventory.getAllProductCategories());
         recyclerView.setAdapter(adapter);
 
+    }
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
     }
 
     private class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
@@ -58,7 +76,7 @@ public class CategoriesActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-
+            Toast.makeText(CategoriesActivity.this, "Categoria " + txtId.getText() + " " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,7 +121,9 @@ public class CategoriesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== R.id.addProductCategory)
         {
-            Toast.makeText(CategoriesActivity.this, "Add Category", Toast.LENGTH_SHORT).show();
+
+            //Toast.makeText(CategoriesActivity.this, "Add Category", Toast.LENGTH_SHORT).show();
+            dialogNewCategory.show(getFragmentManager(), "tag");
             return true;
         }
         else
