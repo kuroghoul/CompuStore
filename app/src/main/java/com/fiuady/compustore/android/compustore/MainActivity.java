@@ -12,7 +12,7 @@ import com.fiuady.compustore.R;
 public class MainActivity extends AppCompatActivity {
 
 
-
+//hola estos son los cambios que yo haré (chacon)
 
     private ImageButton Categories;
     private ImageButton Products;
