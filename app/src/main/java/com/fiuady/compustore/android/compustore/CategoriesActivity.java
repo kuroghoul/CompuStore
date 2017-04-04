@@ -26,8 +26,15 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
     private Inventory inventory;
 
+    @Override
+    public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
+    }
 
-
+    @Override
+    public void onDialogNegativeClick(android.support.v4.app.DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
+    }
 
     private DialogNewCategory dialogNewCategory;
 
@@ -46,15 +53,8 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         recyclerView.setAdapter(adapter);
 
     }
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
-    }
+
 
     private class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
@@ -123,7 +123,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         {
 
             //Toast.makeText(CategoriesActivity.this, "Add Category", Toast.LENGTH_SHORT).show();
-            dialogNewCategory.show(getFragmentManager(), "tag");
+            dialogNewCategory.show(getSupportFragmentManager(), "tag");
             return true;
         }
         else
