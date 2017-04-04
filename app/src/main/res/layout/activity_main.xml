@@ -11,14 +11,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.fiuady.compustore.android.compustore.MainActivity">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Chacon es gay"/>
-    </LinearLayout>
 
     <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
@@ -29,7 +21,8 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:columnCount="2"
         app:rowCount="3"
-        >
+        android:fadeScrollbars="true"
+        tools:background="@android:color/holo_blue_dark">
         <ImageButton
 
             android:id="@+id/Categories"
@@ -39,7 +32,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/steve"
+            android:src="@drawable/categorias"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
 
@@ -53,7 +47,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/zombie"
+            android:src="@drawable/prod"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
 
@@ -67,7 +62,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/creeper"
+            android:src="@drawable/ensambles"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
 
@@ -82,7 +78,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/spider"
+            android:src="@drawable/clientes"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -95,7 +92,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/skeleton"
+            android:src="@drawable/ordenes"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -107,7 +105,8 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/cow"
+            android:src="@drawable/reportes"
+            android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:padding="5dp"
             />
@@ -115,5 +114,14 @@
 
 
     </android.support.v7.widget.GridLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Chacon es gay"/>
+    </LinearLayout>
 
 </LinearLayout>
