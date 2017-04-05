@@ -15,17 +15,7 @@ import java.util.List;
  */
 
 
-class ProductCategoryCursor extends CursorWrapper {
-    public ProductCategoryCursor(Cursor cursor) {
-        super(cursor);
-    }
 
-    public ProductCategories getProductCategory(){
-        Cursor cursor = getWrappedCursor();
-        return new ProductCategories(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.ID)),
-                cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.DESCRIPTION)));
-    }
-}
 
 public final class Inventory {
     private InventoryHelper inventoryHelper;
@@ -37,12 +27,44 @@ public final class Inventory {
 
     }
 
+
+
+
+    class ProductCategoryCursor extends CursorWrapper {
+        public ProductCategoryCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public ProductCategory getProductCategory(){
+            Cursor cursor = getWrappedCursor();
+            return new ProductCategory(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.ID)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.DESCRIPTION)));
+        }
+    }
+    class ProductCursor extends CursorWrapper{
+        public ProductCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public Product getProduct(){
+            Cursor cursor = getWrappedCursor();
+            return new Product(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.ID)),getProductCategoryById(cursor.getInt(cursor.getColumnIndex(ProductsTable.Columns.CATEGORY_ID))),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.DESCRIPTION)), cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.PRICE)), cursor.getInt(cursor.getColumnIndex(ProductsTable.Columns.QTY)));
+        }
+
+    }
+
+
+
+
+
+
     //-------------------------------------------------------------------------
-    //      ProductCategories
+    //      ProductCategory
     //-------------------------------------------------------------------------
-    public List<ProductCategories> getAllProductCategories()
+    public List<ProductCategory> getAllProductCategories()
     {
-        ArrayList<ProductCategories> list = new ArrayList<ProductCategories>();
+        ArrayList<ProductCategory> list = new ArrayList<ProductCategory>();
         ProductCategoryCursor cursor = new ProductCategoryCursor(db.rawQuery("SELECT * FROM product_categories ORDER BY id", null));
         while (cursor.moveToNext())
         {
@@ -51,7 +73,18 @@ public final class Inventory {
         cursor.close();
         return list;
     }
-    public void updateCategory(ProductCategories productCategory){
+
+    public ProductCategory getProductCategoryById(int id) {
+
+
+        ProductCategoryCursor cursor = new ProductCategoryCursor(db.rawQuery("SELECT * FROM product_categories WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+        cursor.moveToNext();
+            ProductCategory category= cursor.getProductCategory();
+            cursor.close();
+            return category;
+
+    }
+    public void updateCategory(ProductCategory productCategory){
         ContentValues values = new ContentValues();
         values.put(ProductCategoriesTable.Columns.DESCRIPTION, productCategory.getDescription());
         db.update(ProductCategoriesTable.NAME,
@@ -61,6 +94,19 @@ public final class Inventory {
     }
 
     //-------------------------------------------------------------------------
-    //      Products
+    //      Product
     //-------------------------------------------------------------------------
+
+    public List<Product> getAllProducts()
+    {
+        ArrayList<Product> list = new ArrayList<Product>();
+        ProductCursor cursor = new ProductCursor(db.rawQuery("SELECT * FROM products ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getProduct());
+        }
+        cursor.close();
+        return list;
+    }
+
 }

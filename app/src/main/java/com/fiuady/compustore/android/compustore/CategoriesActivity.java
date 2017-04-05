@@ -1,7 +1,5 @@
 package com.fiuady.compustore.android.compustore;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,9 +14,7 @@ import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
-import com.fiuady.compustore.db.ProductCategories;
-
-import org.w3c.dom.Text;
+import com.fiuady.compustore.db.ProductCategory;
 
 import java.util.List;
 
@@ -26,8 +22,15 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
     private Inventory inventory;
 
+    @Override
+    public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
+    }
 
-
+    @Override
+    public void onDialogNegativeClick(android.support.v4.app.DialogFragment dialog) {
+        Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
+    }
 
     private DialogNewCategory dialogNewCategory;
 
@@ -46,15 +49,8 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         recyclerView.setAdapter(adapter);
 
     }
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
-    }
+
 
     private class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
@@ -68,7 +64,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
             txtDescription=(TextView)itemView.findViewById(R.id.productcategory_text);
         }
 
-        public void bindProductCategory(ProductCategories productCategory)
+        public void bindProductCategory(ProductCategory productCategory)
         {
             txtId.setText(Integer.toString(productCategory.getId()));
             txtDescription.setText(productCategory.getDescription());
@@ -82,8 +78,8 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
     private class ProductCategoryAdapter extends RecyclerView.Adapter<ProductCategoryHolder>
     {
-        private List<ProductCategories> categories;
-        public ProductCategoryAdapter(List<ProductCategories> categories) {
+        private List<ProductCategory> categories;
+        public ProductCategoryAdapter(List<ProductCategory> categories) {
             this.categories = categories;
         }
 
@@ -123,7 +119,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         {
 
             //Toast.makeText(CategoriesActivity.this, "Add Category", Toast.LENGTH_SHORT).show();
-            dialogNewCategory.show(getFragmentManager(), "tag");
+            dialogNewCategory.show(getSupportFragmentManager(), "tag");
             return true;
         }
         else

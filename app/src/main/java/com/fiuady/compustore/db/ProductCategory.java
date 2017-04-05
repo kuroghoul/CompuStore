@@ -4,11 +4,11 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
-public class ProductCategories {
+public class ProductCategory {
     private int id;
     private String description;
 
-    public ProductCategories(int id, String description) {
+    public ProductCategory(int id, String description) {
         this.id = id;
         this.description = description;
     }
