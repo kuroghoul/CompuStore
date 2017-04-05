@@ -46,6 +46,7 @@ public final class Inventory extends Application {
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.DESCRIPTION)));
         }
     }
+
     class ProductCursor extends CursorWrapper{
         public ProductCursor(Cursor cursor) {
             super(cursor);
