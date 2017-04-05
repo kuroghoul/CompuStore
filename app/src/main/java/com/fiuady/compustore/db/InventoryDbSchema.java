@@ -46,9 +46,9 @@ public final class InventoryDbSchema {
         public static final String NAME = "customers";
         public static final class Columns{
             public static final String ID = "id";
-            public static final String FIRST_NAME = "category_id";
-            public static final String LAST_NAME = "description";
-            public static final String ADDRESS = "price";
+            public static final String FIRST_NAME = "first_name";
+            public static final String LAST_NAME = "last_name";
+            public static final String ADDRESS = "address";
             public static final String PHONE1 = "phone1";
             public static final String PHONE2 = "phone2";
             public static final String PHONE3 = "phone3";
