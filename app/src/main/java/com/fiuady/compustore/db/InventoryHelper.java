@@ -56,6 +56,7 @@ public final class InventoryHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+
     }
     public void applySQLFile(SQLiteDatabase db, String filename)
     {
