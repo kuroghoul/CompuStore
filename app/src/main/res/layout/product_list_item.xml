@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <TextView
         android:id="@+id/product_description_tag"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:id="@+id/product_description_text"
         android:layout_toRightOf="@id/product_description_tag"
         tools:text="...Description: "
-        android:textSize="18sp"
+        android:textSize="10sp"
         android:textStyle="bold"/>
     <TextView
         android:id="@+id/product_category_tag"
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toRightOf="@id/product_category_tag"
-        android:layout_below="@id/product_description_text"
+        android:layout_below="@id/product_description_tag"
         tools:text="...Categoria: "
         android:textSize="18sp"
         android:textStyle="bold"/>

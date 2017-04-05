@@ -8,10 +8,10 @@ import java.util.List;
 
 public class OrderAssemblies {
     private int id;
-    private List<Assemblies> assemblies;
+    private List<Assembly> assemblies;
     private List<Integer> qty;
 
-    public OrderAssemblies(int id, List<Assemblies> assemblies, List<Integer> qty) {
+    public OrderAssemblies(int id, List<Assembly> assemblies, List<Integer> qty) {
         this.id = id;
         this.assemblies = assemblies;
         this.qty = qty;
@@ -25,11 +25,11 @@ public class OrderAssemblies {
         this.id = id;
     }
 
-    public List<Assemblies> getAssemblies() {
+    public List<Assembly> getAssemblies() {
         return assemblies;
     }
 
-    public void setAssemblies(List<Assemblies> assemblies) {
+    public void setAssemblies(List<Assembly> assemblies) {
         this.assemblies = assemblies;
     }
 

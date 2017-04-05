@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
 import com.fiuady.compustore.db.Product;
-import com.fiuady.compustore.db.ProductCategory;
+
 
 import java.util.List;
 
@@ -21,16 +21,15 @@ public class ProductsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProductsActivity.ProductsAdapter adapter;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_products);
 
 
         inventory = new Inventory(getApplicationContext());
-
-
-
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_products);
         recyclerView=(RecyclerView)findViewById(R.id.products_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -52,12 +51,11 @@ public class ProductsActivity extends AppCompatActivity {
         private TextView txtCategory;
         private TextView txtPrice;
         private TextView txtQty;
-
         public ProductHolder (View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
-            txtDescription=(TextView) itemView.findViewById(R.id.product_description_text);
+            txtDescription=(TextView)itemView.findViewById(R.id.product_description_text);
             txtCategory=(TextView)itemView.findViewById(R.id.product_category_text);
             txtPrice=(TextView)itemView.findViewById(R.id.product_price_text);
             txtQty=(TextView)itemView.findViewById(R.id.product_qty_text);
@@ -68,8 +66,8 @@ public class ProductsActivity extends AppCompatActivity {
 
             txtDescription.setText(product.getDescription());
             txtCategory.setText(product.getProductCategory().getDescription());
-            txtPrice.setText(product.getPrice());
-            txtQty.setText(product.getQty());
+            txtPrice.setText(Integer.toString(product.getPrice()));
+            txtQty.setText(Integer.toString(product.getQty()));
         }
 
         @Override
