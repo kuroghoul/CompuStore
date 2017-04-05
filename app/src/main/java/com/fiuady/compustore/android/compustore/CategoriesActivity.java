@@ -1,5 +1,6 @@
 package com.fiuady.compustore.android.compustore;
 
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +20,6 @@ import com.fiuady.compustore.db.ProductCategory;
 import java.util.List;
 
 public class CategoriesActivity extends AppCompatActivity implements DialogNewCategory.DialogNewCategoryListener {
-
     private Inventory inventory;
 
     @Override
@@ -36,7 +36,8 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        inventory = new Inventory(getApplicationContext());
+
+        inventory = new Inventory(this);
         dialogNewCategory = new DialogNewCategory();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);

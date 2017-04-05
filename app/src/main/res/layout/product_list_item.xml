@@ -14,9 +14,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/product_description_text"
-        android:layout_toRightOf="@id/product_description_tag"
+        android:layout_toEndOf="@id/product_description_tag"
+
         tools:text="...Description: "
-        android:textSize="10sp"
+        android:textSize="12sp"
         android:textStyle="bold"/>
     <TextView
         android:id="@+id/product_category_tag"
@@ -33,7 +34,7 @@
         android:layout_toRightOf="@id/product_category_tag"
         android:layout_below="@id/product_description_tag"
         tools:text="...Categoria: "
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold"/>
     <TextView
         android:id="@+id/product_price_tag"
@@ -48,9 +49,9 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toRightOf="@id/product_price_tag"
-        android:layout_below="@id/product_category_text"
+        android:layout_below="@id/product_category_tag"
         tools:text="...Precio: "
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold"/>
 
     <TextView
@@ -66,9 +67,9 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toRightOf="@id/product_qty_tag"
-        android:layout_below="@id/product_price_text"
+        android:layout_below="@id/product_price_tag"
         tools:text="...Cantidad: "
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold"/>
 
 

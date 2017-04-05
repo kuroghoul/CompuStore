@@ -27,7 +27,8 @@ public class ProductsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
 
-        inventory = new Inventory(getApplicationContext());
+        inventory = new Inventory(this);
+        //inventory = (Inventory)getApplication();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
         recyclerView=(RecyclerView)findViewById(R.id.products_recyclerView);

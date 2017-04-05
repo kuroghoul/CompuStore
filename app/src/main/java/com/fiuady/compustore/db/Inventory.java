@@ -1,5 +1,6 @@
 package com.fiuady.compustore.db;
 
+import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import com.fiuady.compustore.db.InventoryDbSchema.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +19,18 @@ import java.util.List;
 
 
 
-public final class Inventory {
-    private InventoryHelper inventoryHelper;
-    private SQLiteDatabase db;
+public final class Inventory extends Application {
+
+    private  InventoryHelper inventoryHelper;
+    private  SQLiteDatabase db;
+
+
 
     public Inventory(Context context){
-        inventoryHelper = new InventoryHelper(context);
-        db = inventoryHelper.getWritableDatabase();
 
+        //inventoryHelper = new InventoryHelper(context);
+        inventoryHelper = InventoryHelper.getInventoryHelper(context);
+        db = inventoryHelper.getWritableDatabase();
     }
 
 

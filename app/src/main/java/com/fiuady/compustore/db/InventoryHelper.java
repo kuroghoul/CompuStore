@@ -22,11 +22,20 @@ import java.nio.channels.FileChannel;
  */
 
 public final class InventoryHelper extends SQLiteOpenHelper {
+    private static InventoryHelper mInstance=null;
 
     private static final String DATABASE_NAME = "inventory.db";
     private static final int SCHEMA_VERSION = 1;
-
     private Context context;
+
+    public static InventoryHelper getInventoryHelper(Context ctx)
+    {
+        if (mInstance == null) {
+            mInstance = new InventoryHelper(ctx.getApplicationContext());
+        }
+        return mInstance;
+    }
+
 
     @Override
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -35,7 +44,8 @@ public final class InventoryHelper extends SQLiteOpenHelper {
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    public InventoryHelper(Context context) {
+    private InventoryHelper(Context context) {
+
         super(context, DATABASE_NAME, null, SCHEMA_VERSION);
         this.context = context;
 
