@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/prod"
+            android:src="@drawable/ordenes"
             android:layout_alignParentBottom="true"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
