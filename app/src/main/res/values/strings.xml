@@ -10,6 +10,15 @@
     <string name="productscategory_id">Categoría: </string>
     <string name="productscategory_description">Descripción: </string>
 
+    <string name="product_description">Descripción: </string>
+    <string name="product_category">Categoria: </string>
+    <string name="product_price">Precio: </string>
+    <string name="product_qty">Qty: </string>
+
+
+
+
+
     <string name="dialog_add_button">Agregar</string>
     <string name="dialog_cancel_button">Cancelar</string>
     <string name="dialog_hint_description">Descripción</string>

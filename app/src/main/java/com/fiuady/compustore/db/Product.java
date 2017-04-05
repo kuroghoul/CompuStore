@@ -4,16 +4,16 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
-public class Products {
+public class Product {
     private int id;
-    private ProductCategories productCategories;
+    private ProductCategory productCategory;
     private String description;
     private int price;
     private int qty;
 
-    public Products(int id, ProductCategories productCategories, String description, int price, int qty) {
+    public Product(int id, ProductCategory productCategory, String description, int price, int qty) {
         this.id = id;
-        this.productCategories = productCategories;
+        this.productCategory = productCategory;
         this.description = description;
         this.price = price;
         this.qty = qty;
@@ -27,12 +27,12 @@ public class Products {
         this.id = id;
     }
 
-    public ProductCategories getProductCategories() {
-        return productCategories;
+    public ProductCategory getProductCategory() {
+        return productCategory;
     }
 
-    public void setProductCategories(ProductCategories productCategories) {
-        this.productCategories = productCategories;
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
     }
 
     public String getDescription() {

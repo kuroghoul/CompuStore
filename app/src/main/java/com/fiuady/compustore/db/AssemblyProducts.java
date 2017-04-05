@@ -8,7 +8,7 @@ import java.util.List;
 
 public class AssemblyProducts {
     private int id;
-    private List<Products> Products;
+    private List<Product> Product;
     private List<Integer> Qty;
 
 }
