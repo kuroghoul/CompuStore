@@ -1,10 +1,13 @@
 package com.fiuady.compustore.android.compustore;
 
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +19,8 @@ import android.widget.Toast;
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
 import com.fiuady.compustore.db.ProductCategory;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -46,28 +51,29 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
 
 
-        adapter = new ProductCategoryAdapter(inventory.getAllProductCategories());
+        adapter = new ProductCategoryAdapter(inventory.getAllProductCategories(), this);
         recyclerView.setAdapter(adapter);
 
     }
 
 
 
-    private class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    private  class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private TextView txtDescription;
         private TextView txtId;
+        private TextView options;
         public ProductCategoryHolder (View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
             txtId=(TextView) itemView.findViewById(R.id.productcategory_id_text);
             txtDescription=(TextView)itemView.findViewById(R.id.productcategory_text);
+            options= (TextView)itemView.findViewById(R.id.productcategory_options);
         }
 
         public void bindProductCategory(ProductCategory productCategory)
         {
-            txtId.setText(Integer.toString(productCategory.getId()));
             txtDescription.setText(productCategory.getDescription());
         }
 
@@ -75,18 +81,60 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         public void onClick(View v) {
             Toast.makeText(CategoriesActivity.this, "Categoria " + txtId.getText() + " " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
         }
+
+        public TextView getOptions()
+        {
+            return options;
+        }
+
+        public TextView getTxtId() {
+            return txtId;
+        }
+
+        public TextView getTxtDescription() {
+            return txtDescription;
+        }
     }
+
+
 
     private class ProductCategoryAdapter extends RecyclerView.Adapter<ProductCategoryHolder>
     {
         private List<ProductCategory> categories;
-        public ProductCategoryAdapter(List<ProductCategory> categories) {
+        private Context context;
+        public ProductCategoryAdapter(List<ProductCategory> categories, Context context) {
             this.categories = categories;
+            this.context = context;
         }
 
         @Override
-        public void onBindViewHolder(ProductCategoryHolder holder, int position) {
+        public void onBindViewHolder(final ProductCategoryHolder  holder, int position) {
             holder.bindProductCategory(categories.get(position));
+            holder.getTxtId().setText(Integer.toString(position+1));
+            holder.getOptions().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popup = new PopupMenu(context, holder.getOptions());
+
+                    popup.inflate(R.menu.menu_options_me);
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.menu1:
+                                    Toast.makeText(CategoriesActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.menu2:
+                                    Toast.makeText(CategoriesActivity.this, item.getTitle().toString() +" "+holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popup.show();
+                }
+            });
         }
 
         @Override
@@ -118,8 +166,6 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== R.id.addProductCategory)
         {
-
-            //Toast.makeText(CategoriesActivity.this, "Add Category", Toast.LENGTH_SHORT).show();
             dialogNewCategory.show(getSupportFragmentManager(), "tag");
             return true;
         }

@@ -26,7 +26,7 @@ public class CustomersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        inventory = new Inventory(getApplicationContext());
+        inventory = new Inventory(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
         recyclerView=(RecyclerView)findViewById(R.id.customers_recyclerView);
