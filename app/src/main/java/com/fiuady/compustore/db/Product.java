@@ -4,12 +4,16 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
+
+
 public class Product {
     private int id;
     private ProductCategory productCategory;
     private String description;
     private int price;
     private int qty;
+
+
 
     public Product(int id, ProductCategory productCategory, String description, int price, int qty) {
         this.id = id;

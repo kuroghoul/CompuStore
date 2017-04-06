@@ -109,6 +109,26 @@ public final class Inventory extends Application {
             return category;
 
     }
+
+    public ProductCategory getProductCategoryByDescription(String description) {
+
+
+        ProductCategoryCursor cursor = new ProductCategoryCursor(db.query(ProductCategoriesTable.NAME,
+                null,
+                ProductCategoriesTable.Columns.DESCRIPTION + "= ? ",
+                new String[]{description},
+                null, null, null));
+        if(cursor.moveToNext()) {
+            ProductCategory category = cursor.getProductCategory();
+            cursor.close();
+            return category;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public void updateCategory(ProductCategory productCategory){
         ContentValues values = new ContentValues();
         values.put(ProductCategoriesTable.Columns.DESCRIPTION, productCategory.getDescription());
@@ -126,6 +146,22 @@ public final class Inventory extends Application {
     {
         ArrayList<Product> list = new ArrayList<Product>();
         ProductCursor cursor = new ProductCursor(db.rawQuery("SELECT * FROM products ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getProduct());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<Product> getProductsFilterByCategory(ProductCategory category, String search)
+    {
+        ArrayList<Product> list = new ArrayList<Product>();
+        ProductCursor cursor = new ProductCursor(db.query(ProductsTable.NAME,
+                null,
+                ProductsTable.Columns.CATEGORY_ID + " = ? AND " + ProductsTable.Columns.DESCRIPTION + " LIKE ?",
+                new String[]{Integer.toString(category.getId()), "%"+search.trim()+"%"},
+                null, null, null));
         while (cursor.moveToNext())
         {
             list.add(cursor.getProduct());

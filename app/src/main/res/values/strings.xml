@@ -9,11 +9,15 @@
 
     <string name="productscategory_id">Categoría: </string>
     <string name="productscategory_description">Descripción: </string>
+    <string name="all_productscategory_filter">Todos</string>
 
+    <string name="product_filter_by_category">Filtrar por: </string>
+    <string name="product_search_hint">Buscar producto...</string>
     <string name="product_description">Descripción: </string>
     <string name="product_category">Categoria: </string>
     <string name="product_price">Precio: </string>
     <string name="product_qty">Qty: </string>
+
 
     <string name="customers_first_name">Nombre: </string>
     <string name="customers_last_name">Apellido: </string>
