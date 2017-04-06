@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,8 +18,6 @@ import android.widget.Toast;
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
 import com.fiuady.compustore.db.ProductCategory;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -158,7 +155,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_categories,menu);
+        inflater.inflate(R.menu.menu_action_addonly,menu);
         return super.onCreateOptionsMenu(menu);
     }
 

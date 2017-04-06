@@ -27,10 +27,11 @@
     <string name="customers_phone3">Teléfono 3: </string>
     <string name="customers_email">E-mail: </string>
 
+    <string name="action_add">Agregar</string>
 
 
-
-
+    <string name="dialog_hint_product_description">Descripción...</string>
+    <string name="dialog_hint_product_price">Precio...</string>
 
     <string name="dialog_add_button">Agregar</string>
     <string name="dialog_cancel_button">Cancelar</string>
