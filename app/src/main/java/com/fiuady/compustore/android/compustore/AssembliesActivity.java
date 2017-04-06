@@ -1,41 +1,41 @@
 package com.fiuady.compustore.android.compustore;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fiuady.compustore.R;
+import com.fiuady.compustore.db.Assembly;
 import com.fiuady.compustore.db.Inventory;
-import com.fiuady.compustore.db.Product;
+
 
 import java.util.List;
 
 public class AssembliesActivity extends AppCompatActivity {
     private Inventory inventory;
     private RecyclerView recyclerView;
-    private AssembliesActivity.ProductsAdapter adapter;
+    private AssembliesActivity.AssemblyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        inventory = new Inventory(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assemblies);
 
-
-        inventory = new Inventory(getApplicationContext());
-
-
-
-        recyclerView=(RecyclerView)findViewById(R.id.products_recyclerView);
+        recyclerView=(RecyclerView)findViewById(R.id.assembly_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
 
-        adapter = new ProductsActivity.ProductsAdapter(inventory.getAllProducts());
+        adapter = new AssembliesActivity.AssemblyAdapter(inventory.getAllAssemblies(), this);
         recyclerView.setAdapter(adapter);
 
     }
@@ -44,54 +44,93 @@ public class AssembliesActivity extends AppCompatActivity {
 
     private class AssemblyHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        private TextView txtName;
-        private TextView txtCategory;
 
+        private TextView txtDescription;
+        private TextView options;
 
         public AssemblyHolder (View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
-            txtName=(TextView) itemView.findViewById(R.id.assembly_name_text);
-            txtCategory=(TextView)itemView.findViewById(R.id.assembly_category_text);
+
+            txtDescription=(TextView)itemView.findViewById(R.id.assembly_description_text);
+            options=(TextView)itemView.findViewById(R.id.assembly_options);
 
         }
 
-        public void bindProduct(Product product)
+        public void bindAssembly(Assembly assembly)
         {
 
-            txtName.setText(Assemblies.getDescription());
-            txtCategory.setText(product.getProductCategory().getDescription());
+            txtDescription.setText(assembly.getDescription());
+
+
 
         }
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(ProductsActivity.this, "Producto: " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AssembliesActivity.this, "Ensamble: " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
+        }
+
+
+        public TextView getTxtDescription() {
+            return txtDescription;
+        }
+
+
+        public TextView getOptions() {
+            return options;
         }
     }
 
-    private class ProductsAdapter extends RecyclerView.Adapter<ProductsActivity.ProductHolder>
+    private class AssemblyAdapter extends RecyclerView.Adapter<AssembliesActivity.AssemblyHolder>
     {
-        private List<Product> products;
-        public ProductsAdapter(List<Product> products) {
-            this.products = products;
+        private List<Assembly> assemblies;
+        private Context context;
+        public AssemblyAdapter(List<Assembly> assemblies, Context context) {
+            this.assemblies = assemblies;
+            this.context = context;
         }
 
         @Override
-        public void onBindViewHolder(ProductsActivity.ProductHolder holder, int position) {
-            holder.bindProduct(products.get(position));
+        public void onBindViewHolder(final AssembliesActivity.AssemblyHolder holder, int position) {
+            holder.bindAssembly(assemblies.get(position));
+
+            holder.getOptions().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popup = new PopupMenu(context, holder.getOptions());
+
+                    popup.inflate(R.menu.menu_options_me);
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.menu1:
+                                    Toast.makeText(AssembliesActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.menu2:
+                                    Toast.makeText(AssembliesActivity.this, item.getTitle().toString() +" "+holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popup.show();
+                }
+            });
         }
 
         @Override
-        public ProductsActivity.ProductHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.product_list_item, parent, false);
-            return new ProductsActivity.ProductHolder(view);
+        public AssembliesActivity.AssemblyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = getLayoutInflater().inflate(R.layout.assembly_list_item, parent, false);
+            return new AssembliesActivity.AssemblyHolder(view);
         }
 
         @Override
         public int getItemCount() {
-            return products.size();
+            return assemblies.size();
         }
     }
 

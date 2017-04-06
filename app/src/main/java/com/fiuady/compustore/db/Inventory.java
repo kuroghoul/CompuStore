@@ -37,9 +37,9 @@ class AssemblyCursor extends CursorWrapper{
     public AssemblyCursor(Cursor cursor) {
         super(cursor);}
 
-    public Assemblies getAssembly(){
+    public Assembly getAssembly(){
         Cursor cursor = getWrappedCursor();
-        return new Assemblies(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.ID)),
+        return new Assembly(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.ID)),
                 cursor.getString(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.DESCRIPTION)));
     }
 
@@ -148,9 +148,9 @@ class AssemblyCursor extends CursorWrapper{
     //-------------------------------------------------------------------------
     //      Assembly
     //-------------------------------------------------------------------------
-    public List<Assemblies> getAllAssembliess()
+    public List<Assembly> getAllAssemblies()
     {
-        ArrayList<Assemblies> list = new ArrayList<Assemblies>();
+        ArrayList<Assembly> list = new ArrayList<Assembly>();
         AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies ORDER BY id", null));
         while (cursor.moveToNext())
         {
@@ -160,14 +160,14 @@ class AssemblyCursor extends CursorWrapper{
         return list;
     }
 
-    public Assemblies getAssembliesById(int id) {
+    public Assembly getAssembliesById(int id) {
 
 
         AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies WHERE id="+Integer.toString(id)+" ORDER BY id", null));
         cursor.moveToNext();
-        Assemblies category= cursor.getAssembly();
+        Assembly assembly= cursor.getAssembly();
         cursor.close();
-        return category;
+        return assembly;
 
     }
 
