@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/assembly_name_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/assemblies_name"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/assembly_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_toRightOf="@id/assembly_name_tag"
+        tools:text="...name: "
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/assembly_category_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/assembly_name_tag"
+        android:text="@string/product_category"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/assembly_category_text"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@id/assembly_category_tag"
+        android:layout_below="@id/assembly_name_tag"
+        tools:text="...Categoria: "
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+
+    <View android:id="@+id/primerdivisor"
+        android:layout_height="2dp"
+        android:layout_width="fill_parent"
+        android:background="#000000"
+        android:layout_below="@id/assembly_category_text"/>
+
+
+
+
+</RelativeLayout>

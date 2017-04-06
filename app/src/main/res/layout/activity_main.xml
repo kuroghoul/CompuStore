@@ -27,7 +27,7 @@
         tools:background="@android:color/holo_blue_dark">
         <ImageButton
 
-            android:id="@+id/Categories"
+            android:id="@+id/Categorias"
             app:layout_column="0"
             app:layout_row="0"
             android:layout_height="wrap_content"
@@ -41,20 +41,24 @@
 
 
             />
+
         <ImageButton
             android:id="@+id/Products"
             app:layout_column="1"
             app:layout_row="0"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1"
-            android:src="@drawable/prod"
+            android:padding="5dp"
+            android:src="@drawable/productos"
             android:layout_alignParentBottom="true"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
 
-            android:padding="5dp"
+
+
+
 
 
             />

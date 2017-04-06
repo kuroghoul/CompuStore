@@ -28,7 +28,19 @@ public final class Inventory {
     }
 
 
+class AssemblyCursor extends CursorWrapper{
+    public AssemblyCursor(Cursor cursor) {
+        super(cursor);}
 
+    public Assemblies getAssembly(){
+        Cursor cursor = getWrappedCursor();
+        return new Assemblies(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.ID)),
+                cursor.getString(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.DESCRIPTION)));
+    }
+
+
+
+}
 
     class ProductCategoryCursor extends CursorWrapper {
         public ProductCategoryCursor(Cursor cursor) {
@@ -108,5 +120,31 @@ public final class Inventory {
         cursor.close();
         return list;
     }
+    //-------------------------------------------------------------------------
+    //      Assembly
+    //-------------------------------------------------------------------------
+    public List<Assemblies> getAllAssembliess()
+    {
+        ArrayList<Assemblies> list = new ArrayList<Assemblies>();
+        AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getAssembly());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public Assemblies getAssembliesById(int id) {
+
+
+        AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+        cursor.moveToNext();
+        Assemblies category= cursor.getAssembly();
+        cursor.close();
+        return category;
+
+    }
+
 
 }
