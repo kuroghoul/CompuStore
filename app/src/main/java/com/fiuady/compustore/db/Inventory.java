@@ -1,5 +1,6 @@
 package com.fiuady.compustore.db;
 
+import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,14 +18,18 @@ import java.util.List;
 
 
 
-public final class Inventory {
-    private InventoryHelper inventoryHelper;
-    private SQLiteDatabase db;
+public final class Inventory extends Application {
+
+    private  InventoryHelper inventoryHelper;
+    private  SQLiteDatabase db;
+
+
 
     public Inventory(Context context){
-        inventoryHelper = new InventoryHelper(context);
-        db = inventoryHelper.getWritableDatabase();
 
+        //inventoryHelper = new InventoryHelper(context);
+        inventoryHelper = InventoryHelper.getInventoryHelper(context);
+        db = inventoryHelper.getWritableDatabase();
     }
 
 
@@ -53,6 +58,7 @@ class AssemblyCursor extends CursorWrapper{
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.DESCRIPTION)));
         }
     }
+
     class ProductCursor extends CursorWrapper{
         public ProductCursor(Cursor cursor) {
             super(cursor);
@@ -62,6 +68,25 @@ class AssemblyCursor extends CursorWrapper{
             Cursor cursor = getWrappedCursor();
             return new Product(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.ID)),getProductCategoryById(cursor.getInt(cursor.getColumnIndex(ProductsTable.Columns.CATEGORY_ID))),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.DESCRIPTION)), cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.ProductsTable.Columns.PRICE)), cursor.getInt(cursor.getColumnIndex(ProductsTable.Columns.QTY)));
+        }
+
+    }
+
+    class CustomerCursor extends CursorWrapper{
+        public CustomerCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public Customer getCustomer(){
+            Cursor cursor = getWrappedCursor();
+            return new Customer(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.ID)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.FIRST_NAME)),
+                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.LAST_NAME)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.ADDRESS)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.PHONE1)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.PHONE2)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.CustomersTable.Columns.PHONE3)),
+                    cursor.getString(cursor.getColumnIndex(CustomersTable.Columns.EMAIL)));
         }
 
     }
@@ -147,4 +172,19 @@ class AssemblyCursor extends CursorWrapper{
     }
 
 
+    //-------------------------------------------------------------------------
+    //      Customer
+    //-------------------------------------------------------------------------
+
+    public List<Customer> getAllCustomers()
+    {
+        ArrayList<Customer> list = new ArrayList<Customer>();
+        CustomerCursor cursor = new CustomerCursor(db.rawQuery("SELECT * FROM customers ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getCustomer());
+        }
+        cursor.close();
+        return list;
+    }
 }

@@ -4,11 +4,11 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
-public class Assemblies {
+public class Assembly {
     private int id;
     private String description;
 
-    public Assemblies(int id, String description) {
+    public Assembly(int id, String description) {
         this.id = id;
         this.description = description;
     }

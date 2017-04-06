@@ -4,7 +4,7 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
-public class Customers {
+public class Customer {
     private int id;
     private String firstName;
     private String lastName;
@@ -14,7 +14,7 @@ public class Customers {
     private String phone3;
     private String email;
 
-    public Customers(int id, String firstName, String lastName, String adress, String phone1, String phone2, String phone3, String email) {
+    public Customer(int id, String firstName, String lastName, String adress, String phone1, String phone2, String phone3, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -4,14 +4,14 @@ package com.fiuady.compustore.db;
  * Created by Kuro on 02/04/2017.
  */
 
-public class Orders {
+public class Order {
     private int id;
     private OrderStatus orderStatus;
-    private Customers customer;
+    private Customer customer;
     private String date; //Probablemente lo cambie después a objeto Date, de momento como String para probar rapidamente
     private String changeLog;
 
-    public Orders(int id, OrderStatus orderStatus, Customers customer, String date, String changeLog) {
+    public Order(int id, OrderStatus orderStatus, Customer customer, String date, String changeLog) {
         this.id = id;
         this.orderStatus = orderStatus;
         this.customer = customer;
@@ -35,11 +35,11 @@ public class Orders {
         this.orderStatus = orderStatus;
     }
 
-    public Customers getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customers customer) {
+    public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 
