@@ -19,6 +19,8 @@ public class Order {
         this.changeLog = changeLog;
     }
 
+
+
     public int getId() {
         return id;
     }

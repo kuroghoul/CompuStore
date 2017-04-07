@@ -25,6 +25,9 @@
 
 
     <string name="assemblies_description">Descripcion</string>
+    <string name="order_client">Cliente</string>
+    <string name="order_status">Estado</string>
+    <string name="order_date">Fecha</string>
 
 
 

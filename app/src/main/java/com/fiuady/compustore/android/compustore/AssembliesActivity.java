@@ -137,21 +137,4 @@ public class AssembliesActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
