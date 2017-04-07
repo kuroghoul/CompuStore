@@ -8,6 +8,7 @@ import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import com.fiuady.compustore.db.InventoryDbSchema.*;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,37 @@ public final class Inventory extends Application {
     }
 
 
+class AssemblyCursor extends CursorWrapper{
+    public AssemblyCursor(Cursor cursor) {
+        super(cursor);}
+
+    public Assembly getAssembly(){
+        Cursor cursor = getWrappedCursor();
+        return new Assembly(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.ID)),
+                cursor.getString(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.DESCRIPTION)));
+    }
+
+
+
+}
+
+    class OrderCursor extends CursorWrapper{
+        public OrderCursor(Cursor cursor) {
+            super(cursor);}
+
+        public Order getOrder(){
+            Cursor cursor = getWrappedCursor();
+            return new Order(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.ID)),
+                    getOrderStatusById(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.STATUS_ID))),
+                    getCustomerById(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.CUSTOMER_ID))),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.DATE)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.CHANGELOG)));
+        }
+
+
+
+    }
+
 
 
     class ProductCategoryCursor extends CursorWrapper {
@@ -46,6 +78,21 @@ public final class Inventory extends Application {
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.ProductCategoriesTable.Columns.DESCRIPTION)));
         }
     }
+    class OrderStatusCursor extends CursorWrapper {
+        public OrderStatusCursor(Cursor cursor) {
+            super(cursor);
+        }
+
+        public OrderStatus getOrderStatus(){
+            Cursor cursor = getWrappedCursor();
+            return new OrderStatus(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.ID)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.DESCRIPTION)),
+                    cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.EDITABLE)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.PREVIOUS)),
+                    cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.NEXT)));
+        }
+    }
+
 
     class ProductCursor extends CursorWrapper{
         public ProductCursor(Cursor cursor) {
@@ -175,6 +222,22 @@ public final class Inventory extends Application {
         cursor.close();
         return list;
     }
+    //-------------------------------------------------------------------------
+    //      Assembly
+    //-------------------------------------------------------------------------
+    public List<Assembly> getAllAssemblies()
+    {
+        ArrayList<Assembly> list = new ArrayList<Assembly>();
+        AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getAssembly());
+        }
+        cursor.close();
+        return list;
+    }
+
+
 
     public List<Product> getProductsFilterByCategory(ProductCategory category, String search)
     {
@@ -257,4 +320,46 @@ public final class Inventory extends Application {
         cursor.close();
         return list;
     }
+
+    //-------------------------------------------------------------------------
+    //      Order
+    //-------------------------------------------------------------------------
+
+    public List<Order> getAllOrders()
+    {
+        ArrayList<Order> list = new ArrayList<Order>();
+        OrderCursor cursor = new OrderCursor(db.rawQuery("SELECT * FROM orders ORDER BY id", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getOrder());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public Customer getCustomerById(int id) {
+
+
+        CustomerCursor cursor = new CustomerCursor(db.rawQuery("SELECT * FROM customers WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+        cursor.moveToNext();
+        Customer customer= cursor.getCustomer();
+        cursor.close();
+        return customer;
+
+    }
+
+
+    public OrderStatus getOrderStatusById(int id) {
+
+
+        OrderStatusCursor cursor = new OrderStatusCursor(db.rawQuery("SELECT * FROM product order_status WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+        cursor.moveToNext();
+        OrderStatus orderstatus= cursor.getOrderStatus();
+        cursor.close();
+        return orderstatus;
+
+    }
+
+
+
 }
