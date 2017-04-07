@@ -12,21 +12,44 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
+import com.fiuady.compustore.db.InventoryDbSchema;
 import com.fiuady.compustore.db.ProductCategory;
 
 import java.util.List;
 
 public class CategoriesActivity extends AppCompatActivity implements DialogNewCategory.DialogNewCategoryListener {
     private Inventory inventory;
+    private DialogNewCategory dialogNewCategory;
+
+    private RecyclerView recyclerView;
+    private ProductCategoryAdapter adapter;
+
 
     @Override
     public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog) {
-        Toast.makeText(CategoriesActivity.this, "Aqui se agrega la categoria", Toast.LENGTH_SHORT).show();
+        EditText description = (EditText) dialog.getDialog().findViewById(R.id.dialog_add_category_description);
+        if (description.getText().toString().trim().equals("")) {
+            Toast.makeText(CategoriesActivity.this, "Categoría no válida", Toast.LENGTH_SHORT).show();
+        } else {
+            if (inventory.getProductCategoryByDescription(description.getText().toString().trim()) == null) {
+                ProductCategory category = new ProductCategory(inventory.getNewIdFrom(InventoryDbSchema.ProductCategoriesTable.NAME),
+                        description.getText().toString());
+
+                inventory.insertProductCategory(category);
+                refreshRecyclerView();
+
+                Toast.makeText(CategoriesActivity.this, "Categoría agregada", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(CategoriesActivity.this, "Ya existe una categoría con la descripción que trata de agregar", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -34,7 +57,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         Toast.makeText(CategoriesActivity.this, "Operación cancelada", Toast.LENGTH_SHORT).show();
     }
 
-    private DialogNewCategory dialogNewCategory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +76,11 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
 
     }
 
-
+    private void refreshRecyclerView()
+    {
+        adapter = new ProductCategoryAdapter(inventory.getAllProductCategories(), this);
+        recyclerView.setAdapter(adapter);
+    }
 
     private  class ProductCategoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
@@ -105,7 +132,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
         }
 
         @Override
-        public void onBindViewHolder(final ProductCategoryHolder  holder, int position) {
+        public void onBindViewHolder(final ProductCategoryHolder  holder, final int position) {
             holder.bindProductCategory(categories.get(position));
             holder.getTxtId().setText(Integer.toString(position+1));
             holder.getOptions().setOnClickListener(new View.OnClickListener() {
@@ -123,9 +150,12 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
                                     Toast.makeText(CategoriesActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
                                     break;
                                 case R.id.menu2:
-                                    Toast.makeText(CategoriesActivity.this, item.getTitle().toString() +" "+holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    inventory.deleteProductCategory(categories.get(position));
+                                    Toast.makeText(CategoriesActivity.this, "Categoría eliminada con éxito", Toast.LENGTH_SHORT).show();
+                                    refreshRecyclerView();
                                     break;
                             }
+
                             return false;
                         }
                     });
@@ -147,8 +177,6 @@ public class CategoriesActivity extends AppCompatActivity implements DialogNewCa
     }
 
 
-    private RecyclerView recyclerView;
-    private ProductCategoryAdapter adapter;
 
 
 

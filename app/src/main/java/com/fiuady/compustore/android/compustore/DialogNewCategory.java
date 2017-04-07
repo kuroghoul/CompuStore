@@ -21,6 +21,7 @@ import com.fiuady.compustore.R;
 
 public class DialogNewCategory extends DialogFragment {
 
+
     public interface DialogNewCategoryListener{ //Este listener sirve para enviar información al activity host de este dialog
         public void onDialogPositiveClick(DialogFragment dialog);
         public void onDialogNegativeClick(DialogFragment dialog);
@@ -46,6 +47,7 @@ public class DialogNewCategory extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View v = inflater.inflate(R.layout.dialog_add_category,null);
@@ -65,4 +67,8 @@ public class DialogNewCategory extends DialogFragment {
         return builder.create();
 
     }
+
+
+
+
 }

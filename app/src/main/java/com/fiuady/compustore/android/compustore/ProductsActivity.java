@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +16,16 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
+import com.fiuady.compustore.db.InventoryDbSchema;
 import com.fiuady.compustore.db.Product;
 import com.fiuady.compustore.db.ProductCategory;
 
@@ -28,9 +33,10 @@ import com.fiuady.compustore.db.ProductCategory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.id;
 
 
-public class ProductsActivity extends AppCompatActivity{
+public class ProductsActivity extends AppCompatActivity implements DialogNewProduct.DialogNewProductListener{
 
     private Inventory inventory;
     private RecyclerView recyclerView;
@@ -40,19 +46,64 @@ public class ProductsActivity extends AppCompatActivity{
     private List<ProductCategory> productCategories;
     private Spinner spinner;
     private String allCategoryFilter;
+    ArrayAdapter<String> spinnerAdapter;
     private Context context;
 
     private EditTextSearch searchText;
     private ImageButton searchButton;
 
 
+    private DialogNewProduct dialogAddProduct;
+    //Bundle dialogBundle;
 
+
+    @Override
+    public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog) {
+
+        EditText description = (EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_description);
+        EditText price = (EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_price);
+        Spinner categories = (Spinner)dialog.getDialog().findViewById(R.id.dialog_add_product_spinner_categories);
+        NumberPicker qty = (NumberPicker)dialog.getDialog().findViewById(R.id.dialog_add_product_qty);
+        if(description.getText().toString().trim().equals(""))
+        {
+            Toast.makeText(ProductsActivity.this, "El producto que intentó agregar no tiene una descripción válida", Toast.LENGTH_SHORT).show();
+        } else
+        if(inventory.getProductByDescription(description.getText().toString().trim())==null) {
+            Product product = new Product(inventory.getNewIdFrom(InventoryDbSchema.ProductsTable.NAME),
+                    inventory.getProductCategoryByDescription(categories.getSelectedItem().toString()),
+                    description.getText().toString(),
+                    Integer.valueOf(price.getText().toString()),
+                    qty.getValue());
+            inventory.insertProduct(product);
+            refreshRecyclerView();
+
+            Toast.makeText(ProductsActivity.this, "Su producto ha sido agregado con éxito", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(ProductsActivity.this, "El producto que intenta agregar ya se encuentra en la base de datos", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDialogNegativeClick(android.support.v4.app.DialogFragment dialog) {
+
+
+        Toast.makeText(ProductsActivity.this,((EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_description)).getText() , Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
         this.context = this;
+        //dialogBundle = new Bundle();
+
+        dialogAddProduct = new DialogNewProduct();
+        //dialogAddProduct.setArguments(dialogBundle);
+        //dialogAddProduct = DialogNewCategory.newInstance(dialogBundle);
+
+        //dialogAddProduct.getBuilder().setTitle("HOLA!!!");
 
         inventory = new Inventory(this);
         products = inventory.getAllProducts();
@@ -70,7 +121,7 @@ public class ProductsActivity extends AppCompatActivity{
         }
         String[] arraySpinnerStrings = new String [arraySpinnerList.size()];
         arraySpinnerList.toArray(arraySpinnerStrings);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraySpinnerStrings);
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraySpinnerStrings);
 
         spinner=(Spinner)findViewById(R.id.spinner_filter_by_category);
         spinner.setAdapter(spinnerAdapter);
@@ -106,7 +157,7 @@ public class ProductsActivity extends AppCompatActivity{
                     searchText.clearFocus();
                     InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
-                    Toast.makeText(ProductsActivity.this, "HOLA!!!", Toast.LENGTH_SHORT).show();
+                    searchProducts();
                     return true;
                 }
                 searchText.clearFocus();
@@ -134,33 +185,40 @@ public class ProductsActivity extends AppCompatActivity{
                 v.setFocusableInTouchMode(false);
                 hideKeyboard(context, v);
 
-                String selectedItem = spinner.getSelectedItem().toString();
-                if (selectedItem == allCategoryFilter)
-                {
-                    products = inventory.getAllProducts();
-                }
-                else {
-                    ProductCategory category = inventory.getProductCategoryByDescription(selectedItem);
-                    products = inventory.getProductsFilterByCategory(category, searchText.getText().toString());
-                }
-
-                if(products.isEmpty())
-                {
-                    Toast.makeText(ProductsActivity.this, "No se encontraron coincidencias", Toast.LENGTH_LONG).show();
-                }
-                adapter = new ProductsActivity.ProductsAdapter(products, context);
-                recyclerView.setAdapter(adapter);
-
-
-
+                searchProducts();
             }
         });
+    }
+
+    private void refreshRecyclerView ()
+    {
+        String selectedItem = spinner.getSelectedItem().toString();
+        if (selectedItem.equals(allCategoryFilter) && searchText.getText().toString().equals(""))
+        {
+            products = inventory.getAllProducts();
+        }
+        else {
+            if (selectedItem.equals(allCategoryFilter)) {
+                products = inventory.getProductsFilterByCategory(null, searchText.getText().toString());
+            }
+            ProductCategory category = inventory.getProductCategoryByDescription(selectedItem);
+            products = inventory.getProductsFilterByCategory(category, searchText.getText().toString());
+        }
 
 
-
-
+        adapter = new ProductsActivity.ProductsAdapter(products, context);
+        recyclerView.setAdapter(adapter);
 
     }
+    private void searchProducts()
+    {
+        refreshRecyclerView();
+        if(products.isEmpty())
+        {
+            Toast.makeText(ProductsActivity.this, "No se encontraron coincidencias", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void hideKeyboard(Context context, View view) {
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -234,7 +292,7 @@ public class ProductsActivity extends AppCompatActivity{
         }
 
         @Override
-        public void onBindViewHolder(final ProductsActivity.ProductHolder holder, int position) {
+        public void onBindViewHolder(final ProductsActivity.ProductHolder holder, final int position) {
             holder.bindProduct(products.get(position));
 
             holder.getOptions().setOnClickListener(new View.OnClickListener() {
@@ -253,9 +311,13 @@ public class ProductsActivity extends AppCompatActivity{
                                     Toast.makeText(ProductsActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
                                     break;
                                 case R.id.menu2:
-                                    Toast.makeText(ProductsActivity.this, item.getTitle().toString() +" "+holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    inventory.deleteProduct(products.get(position));
+                                    Toast.makeText(ProductsActivity.this, products.get(position).getDescription() + " ha sido eliminado de la base de datos", Toast.LENGTH_SHORT).show();
+                                    refreshRecyclerView();
                                     break;
                             }
+
+
                             return false;
                         }
                     });
@@ -277,5 +339,24 @@ public class ProductsActivity extends AppCompatActivity{
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_action_addonly,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId()== R.id.addProductCategory)
+        {
+            dialogAddProduct.show(getSupportFragmentManager(), "tag2");
+            return true;
+        }
+        else
+        {
+            return super.onOptionsItemSelected(item);
+        }
+    }
 }
