@@ -74,7 +74,7 @@ public final class InventoryDbSchema {
             public static final String STATUS_ID = "status_id";
             public static final String CUSTOMER_ID = "customer_id";
             public static final String DATE = "date";
-            public static final String CHANGELOG = "changelog";
+            public static final String CHANGELOG = "change_log";
         }
     }
     public static final class OrderAssembliesTable

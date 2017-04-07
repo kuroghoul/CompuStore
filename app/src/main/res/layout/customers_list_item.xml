@@ -5,134 +5,107 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     >
-
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_horizontal_margin">
     <TextView
         android:id="@+id/customers_firstname_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/customers_first_name"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        style="@style/TextViewTag"
+        android:text="@string/customers_first_name"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/TextViewGeneral"
         android:id="@+id/customers_firstname_text"
-        android:layout_toRightOf="@id/customers_firstname_tag"
+        android:layout_toEndOf="@id/customers_firstname_tag"
         tools:text=" ...Namee "
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_lastname_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_firstname_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_firstname_text"
         android:text="@string/customers_last_name"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/customers_lastname_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_lastname_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_lastname_tag"
         android:layout_below="@id/customers_firstname_text"
         tools:text="...Sorname"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/customers_adress_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_lastname_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_lastname_text"
         android:text="@string/customers_adress"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_adress_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_adress_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_adress_tag"
         android:layout_below="@id/customers_lastname_text"
         tools:text="...adress"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_phone1_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_adress_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_adress_text"
         android:text="@string/customers_phone1"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_phone1_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_phone1_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_phone1_tag"
         android:layout_below="@id/customers_adress_text"
         tools:text="...phone1 "
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/customers_phone2_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_phone1_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_phone1_text"
         android:text="@string/customers_phone2"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_phone2_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_phone1_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_phone1_tag"
         android:layout_below="@id/customers_phone1_text"
         tools:text="...phone2"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/customers_phone3_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_phone2_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_phone2_text"
         android:text="@string/customers_phone3"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_phone3_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_phone3_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_phone3_tag"
         android:layout_below="@id/customers_phone2_text"
         tools:text="...phone3 "
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/customers_email_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/customers_phone3_tag"
+        style="@style/TextViewTag"
+        android:layout_below="@id/customers_phone3_text"
         android:text="@string/customers_email"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        />
     <TextView
         android:id="@+id/customers_email_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/customers_email_tag"
+        style="@style/TextViewGeneral"
+        android:layout_toEndOf="@id/customers_email_tag"
         android:layout_below="@id/customers_phone3_text"
         tools:text="...email "
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-    <View
-        android:layout_height="1dp"
-        android:layout_width="fill_parent"
-        android:background="#707070"
-        android:layout_below="@id/customers_email_tag"/>
+        />
 
-
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

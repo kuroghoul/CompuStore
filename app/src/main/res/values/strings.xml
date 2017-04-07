@@ -33,7 +33,7 @@
 
     <string name="dialog_hint_product_description">Descripción...</string>
     <string name="dialog_hint_product_price">Precio...</string>
-    <string name="assemblies_description">Descripcion</string>
+    <string name="assemblies_description">Descripción</string>
     <string name="order_client">Cliente</string>
     <string name="order_status">Estado</string>
     <string name="order_date">Fecha</string>

@@ -44,8 +44,6 @@ class AssemblyCursor extends CursorWrapper{
                 cursor.getString(cursor.getColumnIndex(InventoryDbSchema.AssembliesTable.Columns.DESCRIPTION)));
     }
 
-
-
 }
 
     class OrderCursor extends CursorWrapper{
@@ -59,13 +57,12 @@ class AssemblyCursor extends CursorWrapper{
                     getCustomerById(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.CUSTOMER_ID))),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.DATE)),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrdersTable.Columns.CHANGELOG)));
+
         }
 
 
 
     }
-
-
 
     class ProductCategoryCursor extends CursorWrapper {
         public ProductCategoryCursor(Cursor cursor) {
@@ -352,7 +349,7 @@ class AssemblyCursor extends CursorWrapper{
     public OrderStatus getOrderStatusById(int id) {
 
 
-        OrderStatusCursor cursor = new OrderStatusCursor(db.rawQuery("SELECT * FROM product order_status WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+        OrderStatusCursor cursor = new OrderStatusCursor(db.rawQuery("SELECT * FROM order_status WHERE id="+Integer.toString(id)+" ORDER BY id", null));
         cursor.moveToNext();
         OrderStatus orderstatus= cursor.getOrderStatus();
         cursor.close();
