@@ -21,7 +21,7 @@
         <activity android:name=".android.compustore.AssembliesActivity" android:label="@string/assemblies_name" />
         <activity android:name=".android.compustore.CustomersActivity" android:label="@string/clients_name" />
         <activity android:name=".android.compustore.OrdersActivity" android:label="@string/orders_name" />
-        <activity android:name=".android.compustore.LogsActivity" android:label="@string/logs_name" ></activity>
+        <activity android:name=".android.compustore.LogsActivity" android:label="@string/logs_name" />
     </application>
 
 </manifest>

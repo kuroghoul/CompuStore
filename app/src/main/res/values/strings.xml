@@ -11,8 +11,66 @@
     <string name="productscategory_description">Descripción: </string>
     <string name="all_productscategory_filter">Todos</string>
 
+
+    <string name="categoriesActivity_insert_invalidDescription">Descripción no válida</string>
+    <string name="categoriesActivity_insert_duplicateDescription">Ya existe una categoría con la descripción que intenta agregar</string>
+    <string name="categoriesActivity_insert_ok">Categoría agregada con éxito</string>
+    <string name="categoriesActivity_delete_alreadyInUse">No se puede eliminar una categoría que está actualmente asignada a un producto</string>
+    <string name="categoriesActivity_delete_ok">Categoría \"#category#\" eliminada con éxito</string>
+    <string name="categoriesActivity_modify_noChanges">No se registraron cambios</string>
+    <string name="categoriesActivity_modify_invalidDescription">Descripción no válida</string>
+    <string name="categoriesActivity_modify_invalidId">Categoría no válida</string>
+    <string name="categoriesActivity_modify_duplicateDescription">Ya existe una categoría con esa descripción</string>
+    <string name="categoriesActivity_modify_ok">Categoría modificada exitosamente</string>
+    <string name="categoriesActivity_dialog_cancel_dismiss">Operación cancelada</string>
+
+    <string name="dialogCategory_hint_description">Descripción&#8230;</string>
+    <string name="dialogCategory_modify_title">Modificar categoría</string>
+    <string name="dialogCategory_modify_positivebtn">Guardar</string>
+    <string name="dialogCategory_modify_negativebtn">Cancelar</string>
+    <string name="dialogCategory_insert_title">Agregar categoría</string>
+    <string name="dialogCategory_insert_positivebtn">Agregar</string>
+    <string name="dialogCategory_insert_negativebtn">Cancelar</string>
+    <string name="dialogConfirm_category_delete_message">¿Seguro que desea eliminar \"#category#\"?</string>
+    <string name="dialogConfirm_Category_delete_positivebtn">Eliminar</string>
+    <string name="dialogConfirm_Category_delete_negativebtn">Cancelar</string>
+
+
+    <string name="dialogProduct_insert_positivebtn">Agregar</string>
+    <string name="dialogProduct_insert_negativebtn">Cancelar</string>
+    <string name="dialogProduct_insert_title">Agregar producto</string>
+    <string name="dialogProduct_modify_positivebtn">Guardar</string>
+    <string name="dialogProduct_modify_negativebtn">Cancelar</string>
+    <string name="dialogProduct_modify_title">Modificar producto</string>
+    <string name="dialogConfirm_products_delete_title">¿Seguro que desea eliminar \"#product#\"?</string>
+    <string name="dialogConfirm_products_delete_positivebtn">Eliminar</string>
+    <string name="dialogConfirm_products_delete_negativebtn">Cancelar</string>
+    <string name="dialogNumberPicker_products_addStock_message">Seleccione el stock actual del producto</string>
+    <string name="dialogNumberPicker_products_addStock_positivebtn">Guardar</string>
+    <string name="dialogNumberPicker_products_addStock_negativebtn">Cancelar</string>
+
+
+    <string name="productsActivity_insert_invalidDescription">Descripción no válida</string>
+    <string name="productsActivity_insert_invalidPrice">Precio no válido</string>
+    <string name="productsActivity_insert_invalidCategory">No existe la categoría seleccionada</string>
+    <string name="productsActivity_insert_duplicateDescription">Ya se encuentra en la base de datos un producto con la misma descripción</string>
+    <string name="productsActivity_insert_ok">Producto agregado con éxito</string>
+    <string name="productsActivity_delete_alreadyInUse">No se puede eliminar un producto que pertenece a un ensamble</string>
+    <string name="productsActivity_delete_ok">El producto \"#product#\" ha sido eliminado de la base de datos</string>
+    <string name="productsActivity_modify_noChanges">No se registraron cambios</string>
+    <string name="productsActivity_modify_invalidDescription">Descripción no válida</string>
+    <string name="productsActivity_modify_invalidPrice">Precio no válido</string>
+    <string name="productsActivity_modify_invalidCategory">No existe la categoría seleccionada</string>
+    <string name="productsActivity_modify_invalidId">Producto no válido</string>
+    <string name="productsActivity_modify_duplicateDescription">Ya se encuentra en la base de datos un producto con la misma descripción</string>
+    <string name="productsActivity_modify_ok">Producto modificado exitosamente</string>
+    <string name="productsActivity_addStock_ok">Se ha modificado el stock del producto</string>
+    <string name="productsActivity_dialog_cancel_dismiss">Operación cancelada</string>
+
+    <string name="productsActivity_search_noResults">No se encontraron coincidencias</string>
+
     <string name="product_filter_by_category">Filtrar por: </string>
-    <string name="product_search_hint">Buscar producto...</string>
+    <string name="product_search_hint">Buscar producto&#8230;</string>
     <string name="product_description">Descripción: </string>
     <string name="product_category">Categoria: </string>
     <string name="product_price">Precio: </string>
@@ -31,8 +89,8 @@
 
 
 
-    <string name="dialog_hint_product_description">Descripción...</string>
-    <string name="dialog_hint_product_price">Precio...</string>
+    <string name="dialog_hint_product_description">Descripción&#8230;</string>
+    <string name="dialog_hint_product_price">$ 0.00</string>
     <string name="assemblies_description">Descripción</string>
     <string name="order_client">Cliente</string>
     <string name="order_status">Estado</string>

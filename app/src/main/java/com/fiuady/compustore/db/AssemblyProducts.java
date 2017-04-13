@@ -7,8 +7,8 @@ import java.util.List;
  */
 
 public class AssemblyProducts {
-    private int id;
-    private List<Product> Product;
-    private List<Integer> Qty;
+    private Assembly assembly;
+    private List<Product> products;
+    private List<Integer> qty;
 
 }

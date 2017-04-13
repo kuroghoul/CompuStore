@@ -23,6 +23,15 @@ public class Product {
         this.qty = qty;
     }
 
+    public Product (Product product)
+    {
+        this.id = product.getId();
+        this.productCategory = product.getProductCategory();
+        this.description = product.getDescription();
+        this.price = product.getPrice();
+        this.qty = product.getQty();
+    }
+
     public int getId() {
         return id;
     }

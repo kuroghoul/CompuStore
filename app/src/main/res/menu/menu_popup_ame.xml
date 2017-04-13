@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ame_addStock"
+        android:title="Agregar Stock" />
+
+    <item
+        android:id="@+id/ame_modify"
+        android:title="Modificar" />
+
+    <item
+        android:id="@+id/ame_delete"
+        android:title="Eliminar" />
+
+</menu>

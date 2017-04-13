@@ -12,6 +12,11 @@ public class ProductCategory {
         this.id = id;
         this.description = description;
     }
+    public ProductCategory(ProductCategory category)
+    {
+        this.id = category.getId();
+        this.description = category.getDescription();
+    }
 
     public int getId() {
         return id;

@@ -1,6 +1,7 @@
 package com.fiuady.compustore.android.compustore;
 
 import android.content.Context;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,18 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Inventory;
-import com.fiuady.compustore.db.InventoryDbSchema;
 import com.fiuady.compustore.db.Product;
 import com.fiuady.compustore.db.ProductCategory;
 
@@ -33,10 +31,14 @@ import com.fiuady.compustore.db.ProductCategory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.id;
 
+public class ProductsActivity extends AppCompatActivity implements DialogProduct.DialogProductListener, DialogConfirm.DialogConfirmListener, DialogNumberPicker.DialogNumberPickerListener {
 
-public class ProductsActivity extends AppCompatActivity implements DialogNewProduct.DialogNewProductListener{
+    private static String dialogTagModify = "com.fiuady.compustore.android.compustore.productsactivity.dialogtagmodify";
+    private static String dialogSaveDataAdapterPosition = "com.fiuady.compustore.android.compustore.productsactivity.dialogsavedataadapterposition";
+    private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.productsactivity.dialogtagdelete";
+    private static String dialogTagInsert = "com.fiuady.compustore.android.compustore.productsactivity.dialogtaginsert";
+    private static String dialogTagAddStock = "com.fiuady.compustore.android.compustore.productsactivity.dialogAddStock";
 
     private Inventory inventory;
     private RecyclerView recyclerView;
@@ -52,44 +54,161 @@ public class ProductsActivity extends AppCompatActivity implements DialogNewProd
     private EditTextSearch searchText;
     private ImageButton searchButton;
 
+    private DialogProduct dialogInsertProduct;
 
-    private DialogNewProduct dialogAddProduct;
-    //Bundle dialogBundle;
+    int maxQty = 9999;
 
 
     @Override
-    public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog) {
+    public void onDialogConfirmPositiveClick(DialogFragment dialog) {
+        Bundle save = ((DialogConfirm)dialog).getSavedData();
+        switch (inventory.deleteProduct(products.get(save.getInt(dialogSaveDataAdapterPosition))))
+        {
+            case AlreadyInUse:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_delete_alreadyInUse), Toast.LENGTH_SHORT).show();
+                break;
+            case Ok:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_delete_ok).replace("#product#", products.get(save.getInt(dialogSaveDataAdapterPosition)).getDescription()), Toast.LENGTH_SHORT).show();
+                refreshRecyclerView();
+                break;
+        }
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onDialogConfirmNegativeClick(DialogFragment dialog) {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onDialogPositiveClick(String tag, android.support.v4.app.DialogFragment dialog) {
 
         EditText description = (EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_description);
         EditText price = (EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_price);
         Spinner categories = (Spinner)dialog.getDialog().findViewById(R.id.dialog_add_product_spinner_categories);
-        NumberPicker qty = (NumberPicker)dialog.getDialog().findViewById(R.id.dialog_add_product_qty);
-        if(description.getText().toString().trim().equals(""))
-        {
-            Toast.makeText(ProductsActivity.this, "El producto que intentó agregar no tiene una descripción válida", Toast.LENGTH_SHORT).show();
-        } else
-        if(inventory.getProductByDescription(description.getText().toString().trim())==null) {
-            Product product = new Product(inventory.getNewIdFrom(InventoryDbSchema.ProductsTable.NAME),
-                    inventory.getProductCategoryByDescription(categories.getSelectedItem().toString()),
-                    description.getText().toString(),
-                    Integer.valueOf(price.getText().toString()),
-                    qty.getValue());
-            inventory.insertProduct(product);
-            refreshRecyclerView();
 
-            Toast.makeText(ProductsActivity.this, "Su producto ha sido agregado con éxito", Toast.LENGTH_SHORT).show();
-        }
-        else
+        //MEJORAR CUANDO INVESTIGUE COMO DAR FORMATO CURRENCY AL EDITTEXT
+        //EL PLAN ES QUE EL USUARIO ESCRIBA EL PRECIO EN FLOTANTE/DOBLE
+        //Y A LA FUNCIÓN InsertProduct PASARLE ESTE NÚMERO Y QUE SE ENCARGUE DE LA CONVERSIÓN A ENTERO
+        //DE LA MISMA MANERA PASARIA CON getProduct, CREARÍA UN PRODUCTO CON FLOTANTE/DOBLE ENCARGANDOSE
+        //DE LA CONVERSIÓN, PUES EN LA BASE DE DATOS SE MANEJA COMO ENTEROS
+
+        //ADEMAS, ESTA LINEA ES PARA CUANDO EL USUARIO NO PONGA PRECIO, SE AGREGUE AUTOMÁTICAMENTE CON 0
+        //DE ESTA MANERA EVITAMOS CREAR UN OBJETO product SIN TENER UN PRICE = NULL
+        if (tag.equals(dialogTagInsert))
         {
-            Toast.makeText(ProductsActivity.this, "El producto que intenta agregar ya se encuentra en la base de datos", Toast.LENGTH_SHORT).show();
+            if(price.getText().toString().equals(""))
+            {
+                price.setText("0");
+            }
+            switch (inventory.insertProduct(description.getText().toString(),
+                    Integer.valueOf(price.getText().toString()),
+                    inventory.getProductCategoryByDescription(categories.getSelectedItem().toString())))
+            {
+                case InvalidDescription:
+                    Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_insert_invalidDescription), Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidPrice:
+                    Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_insert_invalidPrice), Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidCategory:
+                    Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_insert_invalidCategory), Toast.LENGTH_SHORT).show();
+                    break;
+                case DuplicateDescription:
+                    Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_insert_duplicateDescription), Toast.LENGTH_SHORT).show();
+                    break;
+                case Ok:
+                    dialog.dismiss();
+                    refreshRecyclerView();
+                    Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_insert_ok), Toast.LENGTH_SHORT).show();
+                    break;
+
+            }
         }
+        else if (tag.equals(dialogTagModify))
+        {
+            Bundle save = ((DialogProduct)dialog).getSavedData();
+            Product oldProduct = products.get(save.getInt(dialogSaveDataAdapterPosition));
+            if (description.getText().toString().equals(oldProduct.getDescription())
+                    && price.getText().toString().equals(Integer.toString(oldProduct.getPrice()))
+                    && categories.getSelectedItem().toString().equals(oldProduct.getProductCategory().getDescription()))
+            {
+                dialog.dismiss();
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_noChanges), Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Product newProduct = new Product(oldProduct);
+                newProduct.setDescription(description.getText().toString());
+                newProduct.setPrice(Integer.parseInt(price.getText().toString()));
+                newProduct.setProductCategory(inventory.getProductCategoryByDescription(categories.getSelectedItem().toString()));
+                switch (inventory.modifyProduct(newProduct))
+                {
+                    case InvalidDescription:
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidDescription), Toast.LENGTH_SHORT).show();
+                        break;
+                    case InvalidCategory:
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidCategory), Toast.LENGTH_SHORT).show();
+                        break;
+                    case InvalidPrice:
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidPrice), Toast.LENGTH_SHORT).show();
+                        break;
+                    case InvalidId:
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidPrice), Toast.LENGTH_SHORT).show();
+                    case DuplicateDescription:
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_duplicateDescription), Toast.LENGTH_SHORT).show();
+                        break;
+                    case Ok:
+                        dialog.dismiss();
+                        refreshRecyclerView();
+                        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_ok), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }
+
     }
 
     @Override
-    public void onDialogNegativeClick(android.support.v4.app.DialogFragment dialog) {
+    public void onDialogNegativeClick(String tag, android.support.v4.app.DialogFragment dialog) {
+        Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_dialog_cancel_dismiss) , Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
+    }
 
+    @Override
+    public void onDialogNumberPickerPositiveClick(DialogFragment dialog, int value) {
+        Bundle save = ((DialogNumberPicker)dialog).getSavedData();
+        Product newProduct = products.get(save.getInt(dialogSaveDataAdapterPosition));
+        newProduct.setQty(value);
 
-        Toast.makeText(ProductsActivity.this,((EditText)dialog.getDialog().findViewById(R.id.dialog_add_product_description)).getText() , Toast.LENGTH_SHORT).show();
+        switch (inventory.modifyProduct(newProduct))
+        {
+            case InvalidDescription:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidDescription), Toast.LENGTH_SHORT).show();
+                break;
+            case InvalidCategory:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidCategory), Toast.LENGTH_SHORT).show();
+                break;
+            case InvalidPrice:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidPrice), Toast.LENGTH_SHORT).show();
+                break;
+            case InvalidId:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_invalidPrice), Toast.LENGTH_SHORT).show();
+            case DuplicateDescription:
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_modify_duplicateDescription), Toast.LENGTH_SHORT).show();
+                break;
+            case Ok:
+                dialog.dismiss();
+                refreshRecyclerView();
+                Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_addStock_ok), Toast.LENGTH_SHORT).show();
+                break;
+        }
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onDialogNumberPickerNegativeClick(DialogFragment dialog, int value) {
+        dialog.dismiss();
     }
 
     @Override
@@ -97,13 +216,16 @@ public class ProductsActivity extends AppCompatActivity implements DialogNewProd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
         this.context = this;
-        //dialogBundle = new Bundle();
+        Bundle args = new Bundle();
+        args.putString(DialogCategory.ARG_TITLE, getString(R.string.dialogProduct_insert_title));
+        args.putString(DialogCategory.ARG_BTN_POSITIVE, getString(R.string.dialogProduct_insert_positivebtn));
+        args.putString(DialogCategory.ARG_BTN_NEGATIVE, getString(R.string.dialogProduct_insert_negativebtn));
 
-        dialogAddProduct = new DialogNewProduct();
-        //dialogAddProduct.setArguments(dialogBundle);
-        //dialogAddProduct = DialogNewCategory.newInstance(dialogBundle);
+        dialogInsertProduct = DialogProduct.newInstance(dialogTagInsert, args);
+        //dialogInsertProduct.setArguments(dialogBundle);
+        //dialogInsertProduct = DialogCategory.newInstance(dialogBundle);
 
-        //dialogAddProduct.getBuilder().setTitle("HOLA!!!");
+        //dialogInsertProduct.getBuilder().setTitle("HOLA!!!");
 
         inventory = new Inventory(this);
         products = inventory.getAllProducts();
@@ -215,7 +337,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogNewProd
         refreshRecyclerView();
         if(products.isEmpty())
         {
-            Toast.makeText(ProductsActivity.this, "No se encontraron coincidencias", Toast.LENGTH_LONG).show();
+            Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_search_noResults), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -301,20 +423,49 @@ public class ProductsActivity extends AppCompatActivity implements DialogNewProd
 
                     PopupMenu popup = new PopupMenu(context, holder.getOptions());
 
-                    popup.inflate(R.menu.menu_options_me);
+                    popup.inflate(R.menu.menu_popup_ame);
 
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
-                                case R.id.menu1:
-                                    Toast.makeText(ProductsActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                case R.id.ame_addStock:{
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
+
+                                    String message = getString(R.string.dialogNumberPicker_products_addStock_message);
+                                    String positivetxt = getString(R.string.dialogNumberPicker_products_addStock_positivebtn);
+                                    String negativetxt = getString(R.string.dialogNumberPicker_products_addStock_negativebtn);
+                                    int min = products.get(holder.getAdapterPosition()).getQty();
+                                    int max = maxQty;
+
+
+                                    DialogNumberPicker dialogNumberPicker = DialogNumberPicker.newInstance(message, positivetxt, negativetxt, min, max, save);
+                                    dialogNumberPicker.show(getSupportFragmentManager(),dialogTagAddStock);
+                                    break;}
+                                case R.id.ame_modify:{
+                                    Bundle args = new Bundle();
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
+
+                                    args.putString(DialogProduct.ARG_ET_DESCRIPTION,products.get(holder.getAdapterPosition()).getDescription());
+                                    args.putString(DialogProduct.ARG_SP_CATEGORY,products.get(holder.getAdapterPosition()).getProductCategory().getDescription());
+                                    args.putString(DialogProduct.ARG_ET_PRICE,Integer.toString(products.get(holder.getAdapterPosition()).getPrice()));
+                                    args.putString(DialogProduct.ARG_TITLE,getString(R.string.dialogProduct_modify_title));
+                                    args.putString(DialogProduct.ARG_BTN_POSITIVE,getString(R.string.dialogCategory_modify_positivebtn));
+                                    args.putString(DialogProduct.ARG_BTN_NEGATIVE,getString(R.string.dialogProduct_modify_negativebtn));
+                                    args.putBundle(DialogProduct.ARG_SAVE_DATA, save);
+
+                                    DialogProduct modifyProduct = DialogProduct.newInstance(dialogTagModify, args);
+                                    modifyProduct.show(getSupportFragmentManager(), dialogTagModify);
+                                    break;}
+                                case R.id.ame_delete: {
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
+                                    DialogConfirm confirmDelete = DialogConfirm.newInstance(getString(R.string.dialogConfirm_products_delete_title).replace("#product#", products.get(holder.getAdapterPosition()).getDescription()), getString(R.string.dialogConfirm_products_delete_positivebtn), getString(R.string.dialogConfirm_products_delete_negativebtn), save);
+                                    confirmDelete.show(getSupportFragmentManager(), dialogTagDelete);
                                     break;
-                                case R.id.menu2:
-                                    inventory.deleteProduct(products.get(position));
-                                    Toast.makeText(ProductsActivity.this, products.get(position).getDescription() + " ha sido eliminado de la base de datos", Toast.LENGTH_SHORT).show();
-                                    refreshRecyclerView();
-                                    break;
+                                }
                             }
 
 
@@ -351,7 +502,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogNewProd
 
         if (item.getItemId()== R.id.addProductCategory)
         {
-            dialogAddProduct.show(getSupportFragmentManager(), "tag2");
+            dialogInsertProduct.show(getSupportFragmentManager(), dialogTagInsert);
             return true;
         }
         else
