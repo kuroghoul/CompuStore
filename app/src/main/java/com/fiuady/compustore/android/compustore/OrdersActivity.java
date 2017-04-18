@@ -115,10 +115,10 @@ public class OrdersActivity extends AppCompatActivity {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
-                                case R.id.menu1:
+                                case R.id.me_modify:
                                     Toast.makeText(OrdersActivity.this, item.getTitle().toString() + " " + holder.getTxtClient().getText(), Toast.LENGTH_SHORT).show();
                                     break;
-                                case R.id.menu2:
+                                case R.id.me_delete:
                                     Toast.makeText(OrdersActivity.this, item.getTitle().toString() + " " + holder.getTxtClient().getText(), Toast.LENGTH_SHORT).show();
                                     break;
                             }

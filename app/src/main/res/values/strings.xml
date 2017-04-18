@@ -74,7 +74,26 @@
     <string name="product_description">Descripción: </string>
     <string name="product_category">Categoria: </string>
     <string name="product_price">Precio: </string>
-    <string name="product_qty">Qty: </string>
+    <string name="product_qty">Stock: </string>
+
+
+    <string name="assembliesActivity_insert_invalidDescription">Descripción no válida</string>
+    <string name="assembliesActivity_insert_invalidPrice">Precio no válido</string>
+    <string name="assembliesActivity_insert_invalidCategory">No existe la categoría seleccionada</string>
+    <string name="assembliesActivity_insert_duplicateDescription">Ya se encuentra en la base de datos un producto con la misma descripción</string>
+    <string name="assembliesActivity_insert_ok">Ensamble agregado con éxito</string>
+    <string name="assembliesActivity_delete_alreadyInUse">No se puede eliminar un ensamble que está asignado a una orden</string>
+    <string name="assembliesActivity_delete_ok">El ensamble \"#assembly#\" ha sido eliminado de la base de datos</string>
+    <string name="assembliesActivity_modify_noChanges">No se registraron cambios</string>
+    <string name="assembliesActivity_modify_invalidDescription">Descripción no válida</string>
+    <string name="assembliesActivity_modify_invalidId">Ensamble no válido</string>
+    <string name="assembliesActivity_modify_duplicateDescription">Ya se encuentra en la base de datos un ensamble con la misma descripción</string>
+    <string name="assembliesActivity_modify_ok">Ensamble modificado exitosamente</string>
+    <string name="assembliesActivity_dialog_cancel_dismiss">Operación cancelada</string>
+
+    <string name="dialogConfirm_Assembly_delete_message">¿Seguro que desea eliminar \"#assembly#\"?</string>
+    <string name="dialogConfirm_Assembly_delete_positivebtn">Eliminar</string>
+    <string name="dialogConfirm_Assembly_delete_negativebtn">Cancelar</string>
 
 
     <string name="customers_first_name">Nombre: </string>
@@ -88,7 +107,6 @@
     <string name="action_add">Agregar</string>
 
 
-
     <string name="dialog_hint_product_description">Descripción&#8230;</string>
     <string name="dialog_hint_product_price">$ 0.00</string>
     <string name="assemblies_description">Descripción</string>
@@ -97,11 +115,8 @@
     <string name="order_date">Fecha</string>
 
 
-
-
-
-
     <string name="dialog_add_button">Agregar</string>
     <string name="dialog_cancel_button">Cancelar</string>
     <string name="dialog_hint_description">Descripción</string>
+    <string name="title_activity_assembly_insert">AssemblyInsertActivity</string>
 </resources>

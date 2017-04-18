@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light">
-        <activity android:name=".android.compustore.MainActivity"
+        <activity
+            android:name=".android.compustore.MainActivity"
             android:theme="@style/AppThemeNoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,12 +17,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".android.compustore.CategoriesActivity" android:label="@string/categories_name" />
-        <activity android:name=".android.compustore.ProductsActivity" android:label="@string/products_name" />
-        <activity android:name=".android.compustore.AssembliesActivity" android:label="@string/assemblies_name" />
-        <activity android:name=".android.compustore.CustomersActivity" android:label="@string/clients_name" />
-        <activity android:name=".android.compustore.OrdersActivity" android:label="@string/orders_name" />
-        <activity android:name=".android.compustore.LogsActivity" android:label="@string/logs_name" />
+        <activity
+            android:name=".android.compustore.CategoriesActivity"
+            android:label="@string/categories_name" />
+        <activity
+            android:name=".android.compustore.ProductsActivity"
+            android:label="@string/products_name" />
+        <activity
+            android:name=".android.compustore.AssembliesActivity"
+            android:label="@string/assemblies_name" />
+        <activity
+            android:name=".android.compustore.CustomersActivity"
+            android:label="@string/clients_name" />
+        <activity
+            android:name=".android.compustore.OrdersActivity"
+            android:label="@string/orders_name" />
+        <activity
+            android:name=".android.compustore.LogsActivity"
+            android:label="@string/logs_name" />
+        <activity
+            android:name=".android.compustore.AssemblyInsertActivity"
+            android:label="@string/title_activity_assembly_insert"/>
+            <!--//android:theme="@style/Theme.AppCompat.Light.NoActionBar" -->
+        <activity android:name=".android.compustore.AssemblySearchProductActivity"></activity>
     </application>
 
 </manifest>

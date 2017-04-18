@@ -243,7 +243,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
-                                case R.id.menu1:
+                                case R.id.me_modify:
                                     Bundle args = new Bundle();
                                     args.putString(DialogCategory.ARG_ET_DESCRIPTION, categories.get(holder.getAdapterPosition()).getDescription());
                                     args.putString(DialogCategory.ARG_BTN_POSITIVE, getString(R.string.dialogCategory_modify_positivebtn));
@@ -259,7 +259,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
 
 
                                     break;
-                                case R.id.menu2:
+                                case R.id.me_delete:
                                 {
                                     Bundle bundle = new Bundle();
                                     bundle.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());

@@ -1,6 +1,7 @@
 package com.fiuady.compustore.android.compustore;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,9 +37,13 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
 
     private static String dialogTagModify = "com.fiuady.compustore.android.compustore.productsactivity.dialogtagmodify";
     private static String dialogSaveDataAdapterPosition = "com.fiuady.compustore.android.compustore.productsactivity.dialogsavedataadapterposition";
+    private static String dialogSaveDataLayoutPosition = "com.fiuady.compustore.android.compustore.productsactivity.dialogsavedatalayoutposition";
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.productsactivity.dialogtagdelete";
     private static String dialogTagInsert = "com.fiuady.compustore.android.compustore.productsactivity.dialogtaginsert";
     private static String dialogTagAddStock = "com.fiuady.compustore.android.compustore.productsactivity.dialogAddStock";
+
+    private static String KEY_SPINNER_POSITION = "com.fiuady.compustore.android.compustore.productsactivity.spinnerposition";
+    private static String KEY_FLAG_RESTORESEARCH = "com.fiuady.compustore.android.compustore.productsactivity.restoresearch";
 
     private Inventory inventory;
     private RecyclerView recyclerView;
@@ -56,20 +61,28 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
 
     private DialogProduct dialogInsertProduct;
 
+    boolean Flag_restoreSearch;
+
     int maxQty = 9999;
 
 
     @Override
     public void onDialogConfirmPositiveClick(DialogFragment dialog) {
         Bundle save = ((DialogConfirm)dialog).getSavedData();
-        switch (inventory.deleteProduct(products.get(save.getInt(dialogSaveDataAdapterPosition))))
+        int position = save.getInt(dialogSaveDataAdapterPosition);
+        //int layoutPosition = save.getInt(dialogSaveDataLayoutPosition);
+        switch (inventory.deleteProduct(products.get(position)))
         {
             case AlreadyInUse:
                 Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_delete_alreadyInUse), Toast.LENGTH_SHORT).show();
                 break;
             case Ok:
                 Toast.makeText(ProductsActivity.this, getString(R.string.productsActivity_delete_ok).replace("#product#", products.get(save.getInt(dialogSaveDataAdapterPosition)).getDescription()), Toast.LENGTH_SHORT).show();
-                refreshRecyclerView();
+                products.remove(position);
+                //recyclerView.removeViewAt(layoutPosition);
+                adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, products.size());
+                //refreshRecyclerView();
                 break;
         }
         dialog.dismiss();
@@ -213,7 +226,13 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+
+
+
+
         setContentView(R.layout.activity_products);
         this.context = this;
         Bundle args = new Bundle();
@@ -247,26 +266,6 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
 
         spinner=(Spinner)findViewById(R.id.spinner_filter_by_category);
         spinner.setAdapter(spinnerAdapter);
-
-        //spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-        //    @Override
-        //    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        //        String selectedItem = parent.getSelectedItem().toString();
-        //        if (selectedItem == allCategoryFilter)
-        //        {
-        //            products = inventory.getAllProducts();
-        //        }
-        //        else {
-        //            ProductCategory category = inventory.getProductCategoryByDescription(selectedItem);
-        //            products = inventory.getProductsFilterByCategory(category);
-        //        }
-        //    }
-//
-        //    @Override
-        //    public void onNothingSelected(AdapterView<?> parent) {
-//
-        //    }
-        //});
 
 
         searchText=(EditTextSearch) findViewById(R.id.edit_text_product_search);
@@ -310,12 +309,36 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
                 searchProducts();
             }
         });
+
+
+
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SPINNER_POSITION, spinner.getSelectedItemPosition());
+        outState.putBoolean(KEY_FLAG_RESTORESEARCH, Flag_restoreSearch);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        spinner.setSelection(savedInstanceState.getInt(KEY_SPINNER_POSITION));
+        Flag_restoreSearch = savedInstanceState.getBoolean(KEY_FLAG_RESTORESEARCH);
+        if (Flag_restoreSearch)
+        {
+            refreshRecyclerView();
+        }
     }
 
     private void refreshRecyclerView ()
     {
         String selectedItem = spinner.getSelectedItem().toString();
-        if (selectedItem.equals(allCategoryFilter) && searchText.getText().toString().equals(""))
+        if (selectedItem.equals(allCategoryFilter) && searchText.getText().toString().trim().equals(""))
         {
             products = inventory.getAllProducts();
         }
@@ -330,6 +353,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
 
         adapter = new ProductsActivity.ProductsAdapter(products, context);
         recyclerView.setAdapter(adapter);
+        Flag_restoreSearch = true;
 
     }
     private void searchProducts()
@@ -356,6 +380,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         private TextView txtPrice;
         private TextView txtQty;
         private TextView options;
+        private int id;
 
         public ProductHolder (View itemView)
         {
@@ -366,11 +391,72 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
             txtPrice=(TextView)itemView.findViewById(R.id.product_price_text);
             txtQty=(TextView)itemView.findViewById(R.id.product_qty_text);
             options=(TextView)itemView.findViewById(R.id.product_options);
+
+            options.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    PopupMenu popup = new PopupMenu(context, v);
+
+                    popup.inflate(R.menu.menu_popup_ame);
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.ame_addStock:{
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
+
+                                    String message = getString(R.string.dialogNumberPicker_products_addStock_message);
+                                    String positivetxt = getString(R.string.dialogNumberPicker_products_addStock_positivebtn);
+                                    String negativetxt = getString(R.string.dialogNumberPicker_products_addStock_negativebtn);
+                                    int min = products.get(getAdapterPosition()).getQty();
+                                    int max = maxQty;
+
+
+                                    DialogNumberPicker dialogNumberPicker = DialogNumberPicker.newInstance(message, positivetxt, negativetxt, min, max, save);
+                                    dialogNumberPicker.show(getSupportFragmentManager(),dialogTagAddStock);
+                                    break;}
+                                case R.id.ame_modify:{
+                                    Bundle args = new Bundle();
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
+
+                                    args.putString(DialogProduct.ARG_ET_DESCRIPTION,products.get(getAdapterPosition()).getDescription());
+                                    args.putString(DialogProduct.ARG_SP_CATEGORY,products.get(getAdapterPosition()).getProductCategory().getDescription());
+                                    args.putString(DialogProduct.ARG_ET_PRICE,Integer.toString(products.get(getAdapterPosition()).getPrice()));
+                                    args.putString(DialogProduct.ARG_TITLE,getString(R.string.dialogProduct_modify_title));
+                                    args.putString(DialogProduct.ARG_BTN_POSITIVE,getString(R.string.dialogCategory_modify_positivebtn));
+                                    args.putString(DialogProduct.ARG_BTN_NEGATIVE,getString(R.string.dialogProduct_modify_negativebtn));
+                                    args.putBundle(DialogProduct.ARG_SAVE_DATA, save);
+
+                                    DialogProduct modifyProduct = DialogProduct.newInstance(dialogTagModify, args);
+                                    modifyProduct.show(getSupportFragmentManager(), dialogTagModify);
+                                    break;}
+                                case R.id.ame_delete: {
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
+                                    save.putInt(dialogSaveDataLayoutPosition, getLayoutPosition());
+                                    DialogConfirm confirmDelete = DialogConfirm.newInstance(getString(R.string.dialogConfirm_products_delete_title).replace("#product#", products.get(getAdapterPosition()).getDescription()), getString(R.string.dialogConfirm_products_delete_positivebtn), getString(R.string.dialogConfirm_products_delete_negativebtn), save);
+                                    confirmDelete.show(getSupportFragmentManager(), dialogTagDelete);
+                                    break;
+                                }
+                            }
+
+
+                            return false;
+                        }
+                    });
+                    popup.show();
+                }
+            });
+
         }
 
         public void bindProduct(Product product)
         {
-
+            id = product.getId();
             txtDescription.setText(product.getDescription());
             txtCategory.setText(product.getProductCategory().getDescription());
             txtPrice.setText(Integer.toString(product.getPrice()));
@@ -381,6 +467,10 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         public void onClick(View v) {
 
             Toast.makeText(ProductsActivity.this, "Producto: " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
+        }
+
+        public int getId() {
+            return id;
         }
 
         public TextView getTxtDescription() {
@@ -416,65 +506,6 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         @Override
         public void onBindViewHolder(final ProductsActivity.ProductHolder holder, final int position) {
             holder.bindProduct(products.get(position));
-
-            holder.getOptions().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    PopupMenu popup = new PopupMenu(context, holder.getOptions());
-
-                    popup.inflate(R.menu.menu_popup_ame);
-
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.ame_addStock:{
-                                    Bundle save = new Bundle();
-                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
-
-                                    String message = getString(R.string.dialogNumberPicker_products_addStock_message);
-                                    String positivetxt = getString(R.string.dialogNumberPicker_products_addStock_positivebtn);
-                                    String negativetxt = getString(R.string.dialogNumberPicker_products_addStock_negativebtn);
-                                    int min = products.get(holder.getAdapterPosition()).getQty();
-                                    int max = maxQty;
-
-
-                                    DialogNumberPicker dialogNumberPicker = DialogNumberPicker.newInstance(message, positivetxt, negativetxt, min, max, save);
-                                    dialogNumberPicker.show(getSupportFragmentManager(),dialogTagAddStock);
-                                    break;}
-                                case R.id.ame_modify:{
-                                    Bundle args = new Bundle();
-                                    Bundle save = new Bundle();
-                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
-
-                                    args.putString(DialogProduct.ARG_ET_DESCRIPTION,products.get(holder.getAdapterPosition()).getDescription());
-                                    args.putString(DialogProduct.ARG_SP_CATEGORY,products.get(holder.getAdapterPosition()).getProductCategory().getDescription());
-                                    args.putString(DialogProduct.ARG_ET_PRICE,Integer.toString(products.get(holder.getAdapterPosition()).getPrice()));
-                                    args.putString(DialogProduct.ARG_TITLE,getString(R.string.dialogProduct_modify_title));
-                                    args.putString(DialogProduct.ARG_BTN_POSITIVE,getString(R.string.dialogCategory_modify_positivebtn));
-                                    args.putString(DialogProduct.ARG_BTN_NEGATIVE,getString(R.string.dialogProduct_modify_negativebtn));
-                                    args.putBundle(DialogProduct.ARG_SAVE_DATA, save);
-
-                                    DialogProduct modifyProduct = DialogProduct.newInstance(dialogTagModify, args);
-                                    modifyProduct.show(getSupportFragmentManager(), dialogTagModify);
-                                    break;}
-                                case R.id.ame_delete: {
-                                    Bundle save = new Bundle();
-                                    save.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
-                                    DialogConfirm confirmDelete = DialogConfirm.newInstance(getString(R.string.dialogConfirm_products_delete_title).replace("#product#", products.get(holder.getAdapterPosition()).getDescription()), getString(R.string.dialogConfirm_products_delete_positivebtn), getString(R.string.dialogConfirm_products_delete_negativebtn), save);
-                                    confirmDelete.show(getSupportFragmentManager(), dialogTagDelete);
-                                    break;
-                                }
-                            }
-
-
-                            return false;
-                        }
-                    });
-                    popup.show();
-                }
-            });
 
         }
 

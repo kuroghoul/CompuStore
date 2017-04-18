@@ -23,6 +23,7 @@
         <item name="android:background">#dadada</item>
 
     </style>
+
     <style name="CardView.InnerDivisorVertical" parent="CardView.Light">
 
         <item name="android:padding">@dimen/activity_horizontal_margin</item>
@@ -37,6 +38,7 @@
         <item name="android:textSize">12dp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TextViewGeneral">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -44,8 +46,13 @@
         <item name="android:paddingStart">@dimen/activity_horizontal_margin</item>
         <item name="android:paddingEnd">@dimen/activity_horizontal_margin</item>
     </style>
+
     <style name="FullFocusable">
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
     </style>
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

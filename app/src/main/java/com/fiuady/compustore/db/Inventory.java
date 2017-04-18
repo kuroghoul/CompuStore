@@ -36,6 +36,8 @@ public final class Inventory extends Application {
     }
 
 
+    //region Cursors
+    //---------------------------------------------------------------------------------------
 class AssemblyCursor extends CursorWrapper{
     public AssemblyCursor(Cursor cursor) {
         super(cursor);}
@@ -124,10 +126,8 @@ class AssemblyCursor extends CursorWrapper{
         }
 
     }
-
-
-
-
+    //---------------------------------------------------------------------------------------
+    //endregion
 
     public int getNewIdFrom(String Table)
     {
@@ -143,8 +143,6 @@ class AssemblyCursor extends CursorWrapper{
             return -1;
         }
     }
-
-
 
 
     //region ProductCategory Methods
@@ -285,6 +283,23 @@ class AssemblyCursor extends CursorWrapper{
     {
         ArrayList<Product> list = new ArrayList<Product>();
         ProductCursor cursor = new ProductCursor(db.rawQuery("SELECT * FROM products ORDER BY description", null));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getProduct());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<Product> getAllProductsWithException(String except)
+    {
+        ArrayList<Product> list = new ArrayList<Product>();
+        //ProductCursor cursor = new ProductCursor(db.rawQuery("SELECT * FROM products ORDER BY description", null));
+        ProductCursor cursor = new ProductCursor(db.query(ProductsTable.NAME,
+                null,
+                ProductsTable.Columns.ID + " NOT IN ",
+                new String[]{except},
+                null, null, null));
         while (cursor.moveToNext())
         {
             list.add(cursor.getProduct());
@@ -467,13 +482,16 @@ class AssemblyCursor extends CursorWrapper{
     //endregion
 
 
-    //-------------------------------------------------------------------------
-    //      Assembly
-    //-------------------------------------------------------------------------
+    //region Assemblies Methods
+    //---------------------------------------------------------------------------------------
     public List<Assembly> getAllAssemblies()
     {
         ArrayList<Assembly> list = new ArrayList<Assembly>();
-        AssemblyCursor cursor = new AssemblyCursor(db.rawQuery("SELECT * FROM assemblies ORDER BY id", null));
+        AssemblyCursor cursor = new AssemblyCursor(db.query(AssembliesTable.NAME,
+                null,
+                null,
+                null,
+                AssembliesTable.Columns.DESCRIPTION, null, null));
         while (cursor.moveToNext())
         {
             list.add(cursor.getAssembly());
@@ -482,13 +500,130 @@ class AssemblyCursor extends CursorWrapper{
         return list;
     }
 
+    public Assembly getAssemblyById(int id)
+    {
+        AssemblyCursor cursor = new AssemblyCursor(db.query(AssembliesTable.NAME,
+                null,
+                AssembliesTable.Columns.ID + "= ",
+                new String[]{Integer.toString(id)},
+                null, null, null));
+        if(cursor.moveToNext())
+        {
+            return cursor.getAssembly();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public Assembly getAssemblyByDescription(String description)
+    {
+        AssemblyCursor cursor = new AssemblyCursor(db.query(AssembliesTable.NAME,
+                null,
+                AssembliesTable.Columns.DESCRIPTION + " LIKE ? ",
+                new String[]{description},
+                null, null, null));
+        if(cursor.moveToNext())
+        {
+            return cursor.getAssembly();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public List<Order> findOrdersWithAssembly(Assembly assembly)
+    {
+        ArrayList<Order> orders = new ArrayList<Order>();
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                OrdersTable.Columns.ID + " IN (SELECT " + AssemblyProductsTable.Columns.ID +
+                        " FROM " + OrderAssembliesTable.NAME  +
+                                " WHERE " + OrderAssembliesTable.Columns.ASSEMBLY_ID+ " = ?)" ,
+                        new String[]{Integer.toString(assembly.getId())},
+                null, null, null
+                        ));
+        while (cursor.moveToNext())
+        {
+            orders.add(cursor.getOrder());
+        }
+
+        return orders;
+    }
 
 
+    public InsertResponse insertAssembly (String description, ArrayList<Product> products, ArrayList<Integer> Qty)
+    {
+        if(description.trim().equals(""))
+        {
+            return InsertResponse.InvalidDescription;
+        }
+        else if (getAssemblyByDescription(description.trim())!=null)
+        {
+            return InsertResponse.DuplicateDescription;
+        }
+
+        else if (!products.isEmpty())
+        {
+            int newId = getNewIdFrom(AssembliesTable.NAME);
+            ContentValues values = new ContentValues();
+            values.put(AssembliesTable.Columns.ID, Integer.toString(newId));
+            values.put(AssembliesTable.Columns.DESCRIPTION, description.trim());
+            db.insert(AssembliesTable.NAME, null, values);
+
+            if(products.size() == Qty.size())
+            {
+                for (int i = 0 ; i<products.size() ; i++)
+                {
+                    ContentValues values2 = new ContentValues();
+                    values2.put(AssemblyProductsTable.Columns.ID, newId);
+                    values2.put(AssemblyProductsTable.Columns.PRODUCT_ID, products.get(i).getId());
+                    values2.put(AssemblyProductsTable.Columns.QTY, Qty.get(i));
+                    db.insert(AssemblyProductsTable.NAME, null, values2);
+                }
+            }
+            return InsertResponse.Ok;
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put(AssembliesTable.Columns.ID, Integer.toString(getNewIdFrom(AssembliesTable.NAME)));
+            values.put(AssembliesTable.Columns.DESCRIPTION, description);
+            db.insert(AssembliesTable.NAME, null, values);
+            return InsertResponse.Ok;
+        }
 
 
-    //-------------------------------------------------------------------------
-    //      Customer
-    //-------------------------------------------------------------------------
+    }
+
+    public DeleteResponse deleteAssembly (Assembly assembly)
+    {
+        if ( !findOrdersWithAssembly(assembly).isEmpty())
+        {
+            return DeleteResponse.AlreadyInUse;
+        }
+        else
+        {
+            db.delete(AssemblyProductsTable.NAME,
+                    "id = ?",
+                    new String[]{Integer.toString(assembly.getId())});
+            db.delete(AssembliesTable.NAME,
+                    "id = ?",
+                    new String[]{Integer.toString(assembly.getId())});
+            return DeleteResponse.Ok;
+
+        }
+    }
+
+
+    //---------------------------------------------------------------------------------------
+    //endregion
+
+
+    //region Customers Methods
+    //---------------------------------------------------------------------------------------
 
     public List<Customer> getAllCustomers()
     {
@@ -501,10 +636,11 @@ class AssemblyCursor extends CursorWrapper{
         cursor.close();
         return list;
     }
+    //endregion
 
-    //-------------------------------------------------------------------------
-    //      Order
-    //-------------------------------------------------------------------------
+
+    //region Orders Methods
+    //---------------------------------------------------------------------------------------
 
     public List<Order> getAllOrders()
     {
@@ -541,6 +677,10 @@ class AssemblyCursor extends CursorWrapper{
 
     }
 
-
+    //---------------------------------------------------------------------------------------
+    //endregion
 
 }
+
+
+
