@@ -302,6 +302,7 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
                     break;
                 case Ok:
                     Toast.makeText(AssemblyInsertActivity.this, "Ensamble agregado con éxito", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                     break;
             }

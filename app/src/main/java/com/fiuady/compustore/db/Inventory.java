@@ -126,6 +126,19 @@ class AssemblyCursor extends CursorWrapper{
         }
 
     }
+
+    class AssemblyProductsCursor extends CursorWrapper{
+        public AssemblyProductsCursor(Cursor cursor){
+            super(cursor);
+        }
+
+        public AssemblyProducts getAssemblyProducts () {
+            Cursor cursor = getWrappedCursor();
+            return new AssemblyProducts(cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.ID)),
+                    cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.PRODUCT_ID)),
+                    cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.QTY)));
+        }
+    }
     //---------------------------------------------------------------------------------------
     //endregion
 
@@ -484,7 +497,7 @@ class AssemblyCursor extends CursorWrapper{
 
     //region Assemblies Methods
     //---------------------------------------------------------------------------------------
-    public List<Assembly> getAllAssemblies()
+    public ArrayList<Assembly> getAllAssemblies()
     {
         ArrayList<Assembly> list = new ArrayList<Assembly>();
         AssemblyCursor cursor = new AssemblyCursor(db.query(AssembliesTable.NAME,
@@ -500,11 +513,41 @@ class AssemblyCursor extends CursorWrapper{
         return list;
     }
 
+    public ArrayList<Product> getAllAssemblyProducts(int assemblyId)
+    {
+        AssemblyProductsCursor cursor = new AssemblyProductsCursor(db.query(AssemblyProductsTable.NAME,
+                null,
+                AssemblyProductsTable.Columns.ID + " = ? ",
+                new String[]{Integer.toString(assemblyId)},
+                null, null, null));
+        ArrayList<Product> products = new ArrayList<Product>();
+        while(cursor.moveToNext())
+        {
+            products.add(getProductById(cursor.getAssemblyProducts().getProductId()));
+        }
+        return products;
+    }
+
+    public ArrayList<AssemblyProducts> getAssemblyProductsById (int assemblyId)
+    {
+        AssemblyProductsCursor cursor = new AssemblyProductsCursor(db.query(AssemblyProductsTable.NAME,
+                null,
+                AssemblyProductsTable.Columns.ID + " = ? ",
+                new String[]{Integer.toString(assemblyId)},
+                null, null, null));
+        ArrayList<AssemblyProducts> products = new ArrayList<AssemblyProducts>();
+        while(cursor.moveToNext())
+        {
+            products.add(cursor.getAssemblyProducts());
+        }
+        return products;
+    }
+
     public Assembly getAssemblyById(int id)
     {
         AssemblyCursor cursor = new AssemblyCursor(db.query(AssembliesTable.NAME,
                 null,
-                AssembliesTable.Columns.ID + "= ",
+                AssembliesTable.Columns.ID + " = ? ",
                 new String[]{Integer.toString(id)},
                 null, null, null));
         if(cursor.moveToNext())
@@ -553,6 +596,51 @@ class AssemblyCursor extends CursorWrapper{
         return orders;
     }
 
+
+    public ModifyResponse modifyAssembly (Assembly assembly, ArrayList<AssemblyProducts> products)
+    {
+        if (assembly.getDescription().trim().equals(""))
+        {
+            return ModifyResponse.InvalidDescription;
+        }
+
+        Assembly oldAssembly = getAssemblyById(assembly.getId());
+        if(oldAssembly!=null)
+        {
+            if( !(oldAssembly.getDescription().trim().toLowerCase().equals(assembly.getDescription().trim().toLowerCase())) &&
+                    getAssemblyByDescription(assembly.getDescription())!=null)
+            {
+                return ModifyResponse.DuplicateDescription;
+            }
+            else {
+                ContentValues values = new ContentValues();
+                values.put(AssembliesTable.Columns.DESCRIPTION, assembly.getDescription().trim());
+
+                db.update(AssembliesTable.NAME,
+                        values,
+                        AssembliesTable.Columns.ID + " = ? ",
+                        new String[]{Integer.toString(assembly.getId())});
+
+                db.delete(AssemblyProductsTable.NAME, "ID = ?", new String[]{Integer.toString(assembly.getId())});
+                if(products!=null) {
+                    for (AssemblyProducts assemblyP : products )
+                    {
+                        ContentValues valuesAP = new ContentValues();
+                        valuesAP.put(AssemblyProductsTable.Columns.ID, assemblyP.getAssemblyId());
+                        valuesAP.put(AssemblyProductsTable.Columns.PRODUCT_ID, assemblyP.getProductId());
+                        valuesAP.put(AssemblyProductsTable.Columns.QTY, assemblyP.getQty());
+                        db.insert(AssemblyProductsTable.NAME, null, valuesAP);
+                    }
+
+                }
+                return ModifyResponse.Ok;
+            }
+        }
+        else
+        {
+            return ModifyResponse.InvalidId;
+        }
+    }
 
     public InsertResponse insertAssembly (String description, ArrayList<Product> products, ArrayList<Integer> Qty)
     {

@@ -191,8 +191,10 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
     @Override
     public void onDialogNumberPickerPositiveClick(DialogFragment dialog, int value) {
         Bundle save = ((DialogNumberPicker)dialog).getSavedData();
-        Product newProduct = products.get(save.getInt(dialogSaveDataAdapterPosition));
+        int position = save.getInt(dialogSaveDataAdapterPosition);
+        Product newProduct = products.get(position);
         newProduct.setQty(value);
+
 
         switch (inventory.modifyProduct(newProduct))
         {

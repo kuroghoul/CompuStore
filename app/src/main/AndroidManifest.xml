@@ -37,9 +37,10 @@
             android:label="@string/logs_name" />
         <activity
             android:name=".android.compustore.AssemblyInsertActivity"
-            android:label="@string/title_activity_assembly_insert"/>
-            <!--//android:theme="@style/Theme.AppCompat.Light.NoActionBar" -->
-        <activity android:name=".android.compustore.AssemblySearchProductActivity"></activity>
+            android:label="@string/title_activity_assembly_insert" />
+        <!-- //android:theme="@style/Theme.AppCompat.Light.NoActionBar" -->
+        <activity android:name=".android.compustore.AssemblySearchProductActivity" />
+        <activity android:name=".android.compustore.AssemblyModifyActivity"></activity>
     </application>
 
 </manifest>

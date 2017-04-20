@@ -21,20 +21,23 @@ import com.fiuady.compustore.db.Assembly;
 import com.fiuady.compustore.db.Inventory;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AssembliesActivity extends AppCompatActivity implements DialogConfirm.DialogConfirmListener {
+
 
     private static String dialogTagModify = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogtagmodify";
     private static String dialogSaveDataAdapterPosition = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogsavedataadapterposition";
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogtagdelete";
     private static String dialogTagInsert = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogtaginsert";
     private static String dialogTagAddStock = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogAddStock";
-
+    public static final int CODE_INSERT_ASSEMBLY = 0;
+    public static final int CODE_MODIFY_ASSEMBLY = 2;
 
     private Inventory inventory;
     private RecyclerView recyclerView;
-    List<Assembly> assemblies;
+    ArrayList<Assembly> assemblies;
     private AssembliesActivity.AssemblyAdapter adapter;
 
     @Override
@@ -143,7 +146,10 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.me_modify:
-                                    Toast.makeText(AssembliesActivity.this, item.getTitle().toString() +" "+ holder.getTxtDescription().getText(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(AssembliesActivity.this, AssemblyModifyActivity.class);
+                                    intent.putExtra(AssemblyModifyActivity.EXTRA_ASSEMBLY_ID, assemblies.get(holder.getAdapterPosition()).getId());
+                                    startActivityForResult(intent, CODE_MODIFY_ASSEMBLY);
+
                                     break;
                                 case R.id.me_delete:
 
@@ -181,19 +187,34 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
         return super.onCreateOptionsMenu(menu);
     }
 
+
+    private void refreshRecyclerView ()
+    {
+        assemblies = inventory.getAllAssemblies();
+        adapter = new AssembliesActivity.AssemblyAdapter(assemblies, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        refreshRecyclerView();
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId()== R.id.assembly_menu_insert)
         {
             Intent intent = new Intent(this, AssemblyInsertActivity.class);
-            startActivity(intent);
-
+            startActivityForResult(intent, CODE_MODIFY_ASSEMBLY);
             return true;
         }
         else
         {
             return super.onOptionsItemSelected(item);
         }
+
     }
 
 }

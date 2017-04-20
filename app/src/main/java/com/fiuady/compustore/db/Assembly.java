@@ -13,6 +13,12 @@ public class Assembly {
         this.description = description;
     }
 
+    public Assembly(Assembly assembly)
+    {
+        this.id = assembly.getId();
+        this.description = assembly.getDescription();
+    }
+
     public int getId() {
         return id;
     }
