@@ -24,9 +24,10 @@ public final class Inventory extends Application {
     private  InventoryHelper inventoryHelper;
     private  SQLiteDatabase db;
 
-    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory}
+    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidFirstName, InvalidLastName, InvalidAddress}
     public enum DeleteResponse {Ok, AlreadyInUse}
-    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId}
+    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId, InvalidFirstName, InvalidLastName, InvalidAddress}
+    public enum CustomerFilters {Default, FirstName, LastName, Address, Phone, Email}
 
     public Inventory(Context context){
 
@@ -552,7 +553,9 @@ class AssemblyCursor extends CursorWrapper{
                 null, null, null));
         if(cursor.moveToNext())
         {
-            return cursor.getAssembly();
+            Assembly assembly = cursor.getAssembly();
+            cursor.close();
+            return assembly;
         }
         else
         {
@@ -713,7 +716,7 @@ class AssemblyCursor extends CursorWrapper{
     //region Customers Methods
     //---------------------------------------------------------------------------------------
 
-    public List<Customer> getAllCustomers()
+    public ArrayList<Customer> getAllCustomers()
     {
         ArrayList<Customer> list = new ArrayList<Customer>();
         CustomerCursor cursor = new CustomerCursor(db.rawQuery("SELECT * FROM customers ORDER BY id", null));
@@ -724,6 +727,213 @@ class AssemblyCursor extends CursorWrapper{
         cursor.close();
         return list;
     }
+
+    public Customer getCustomerById (int id)
+    {
+        CustomerCursor cursor = new CustomerCursor(db.query(CustomersTable.NAME,
+                null,
+                CustomersTable.Columns.ID + " = ?",
+                new String[]{Integer.toString(id)},
+                null,
+                null,
+                null));
+        if(cursor.moveToNext())
+        {
+            Customer customer = cursor.getCustomer();
+            cursor.close();
+            return customer;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    public ArrayList<Customer> searchCustomersWithFilter (ArrayList<CustomerFilters> filters, String searchTxt)
+    {
+        ArrayList<Customer> list = new ArrayList<Customer>();
+
+
+        StringBuilder selection = new StringBuilder();
+        int counter = 0;
+
+        if (!filters.isEmpty())
+        {
+            for(CustomerFilters filter : filters)
+            {
+
+                switch (filter){
+                    case FirstName:
+                        if(selection.length()!=0)
+                        {
+                            selection.append(" OR ");
+                        }
+                        counter++;
+                        selection.append("(" + CustomersTable.Columns.FIRST_NAME + " LIKE ?)");
+                        break;
+                    case LastName:
+                        if(selection.length()!=0)
+                        {
+                            selection.append(" OR ");
+                        }
+                        counter++;
+                        selection.append("(" + CustomersTable.Columns.LAST_NAME + " LIKE ?)");
+                        break;
+                    case Address:
+                        if(selection.length()!=0)
+                        {
+                            selection.append(" OR ");
+                        }
+                        counter++;
+                        selection.append("(" + CustomersTable.Columns.ADDRESS + " LIKE ?)");
+                        break;
+                    case Phone:
+                        if(selection.length()!=0)
+                        {
+                            selection.append(" OR ");
+                        }
+                        counter = counter + 3;
+                        selection.append("(( newphone1 LIKE ?)");
+                        selection.append(" OR (newphone2 LIKE ?)");
+                        selection.append(" OR (newphone3 LIKE ?))");
+                        break;
+                    case Email:
+                        if(selection.length()!=0)
+                        {
+                            selection.append(" OR ");
+                        }
+                        counter++;
+                        selection.append("(" + CustomersTable.Columns.EMAIL + " LIKE ?)");
+                        break;
+                    //case Default:
+                    //    if(selection.length()!=0)
+                    //    {
+                    //        selection.append(" OR ");
+                    //    }
+                    //    break;
+                }
+            }
+            String selectionArgs[] = new String[counter];
+            for (int i=0; i<counter;i++)
+            {
+                selectionArgs[i]= "%" + searchTxt + "%";
+            }
+            String columns[] = new String[]{CustomersTable.Columns.ID,
+                    CustomersTable.Columns.FIRST_NAME,
+                    CustomersTable.Columns.LAST_NAME,
+                    CustomersTable.Columns.ADDRESS,
+                    CustomersTable.Columns.PHONE1,
+                    CustomersTable.Columns.PHONE2,
+                    CustomersTable.Columns.PHONE3,
+                    CustomersTable.Columns.EMAIL,
+                    "REPLACE(phone1,'-','') as newphone1",
+                    "REPLACE(phone2,'-','') as newphone2",
+                    "REPLACE(phone3,'-','') as newphone3"};
+            String orderBy= CustomersTable.Columns.FIRST_NAME;
+            CustomerCursor cursor = new CustomerCursor(db.query(CustomersTable.NAME, columns, selection.toString(), selectionArgs, null, null, orderBy));
+            while(cursor.moveToNext())
+            {
+                list.add(cursor.getCustomer());
+            }
+
+        }
+        return list;
+    }
+
+
+    public InsertResponse insertCustomer (String firstname, String lastname, String address, String phone1, String phone2, String phone3, String email)
+    {
+        if (firstname.equals(""))
+        {
+            return InsertResponse.InvalidFirstName;
+        }
+        else if (lastname.equals(""))
+        {
+            return InsertResponse.InvalidLastName;
+        }
+        else if (address.equals(""))
+        {
+            return InsertResponse.InvalidAddress;
+        }
+
+        else
+        {
+            int newId = getNewIdFrom(CustomersTable.NAME);
+            ContentValues values = new ContentValues();
+            values.put(CustomersTable.Columns.ID, Integer.toString(newId));
+            values.put(CustomersTable.Columns.FIRST_NAME, firstname);
+            values.put(CustomersTable.Columns.LAST_NAME, lastname);
+            values.put(CustomersTable.Columns.ADDRESS, address);
+            values.put(CustomersTable.Columns.PHONE1, (phone1.equals("") ? null : phone1));
+            values.put(CustomersTable.Columns.PHONE2, (phone2.equals("") ? null : phone3));
+            values.put(CustomersTable.Columns.PHONE3, (phone3.equals("") ? null : phone3));
+            values.put(CustomersTable.Columns.EMAIL, (email.equals("") ? null : email));
+
+            db.insert(CustomersTable.NAME, null, values);
+            return InsertResponse.Ok;
+        }
+    }
+
+    public ModifyResponse modifyCustomer (Customer newCustomer)
+    {
+
+        if(newCustomer.getFirstName().equals(""))
+        {
+            return ModifyResponse.InvalidFirstName;
+        }
+        else if(newCustomer.getLastName().equals(""))
+        {
+            return ModifyResponse.InvalidLastName;
+        }
+        else if (newCustomer.getAddress().equals(""))
+        {
+            return ModifyResponse.InvalidAddress;
+        }
+        else
+        {
+            Customer oldCustomer = getCustomerById(newCustomer.getId());
+            if (oldCustomer!=null)
+            {
+                ContentValues values = new ContentValues();
+
+                values.put(CustomersTable.Columns.FIRST_NAME, newCustomer.getFirstName());
+                values.put(CustomersTable.Columns.LAST_NAME, newCustomer.getLastName());
+                values.put(CustomersTable.Columns.ADDRESS, newCustomer.getAddress());
+                values.put(CustomersTable.Columns.PHONE1, (newCustomer.getPhone1().equals("") ? null : newCustomer.getPhone1()));
+                values.put(CustomersTable.Columns.PHONE2, (newCustomer.getPhone2().equals("") ? null : newCustomer.getPhone2()));
+                values.put(CustomersTable.Columns.PHONE3, (newCustomer.getPhone3().equals("") ? null : newCustomer.getPhone3()));
+                values.put(CustomersTable.Columns.EMAIL, (newCustomer.getEmail().equals("") ? null : newCustomer.getEmail()));
+
+                db.update(CustomersTable.NAME, values,
+                        CustomersTable.Columns.ID + " = ?", new String[] {Integer.toString(newCustomer.getId())});
+                return ModifyResponse.Ok;
+            }
+            else
+            {
+                return ModifyResponse.InvalidId;
+            }
+        }
+
+    }
+
+    public DeleteResponse deleteCustomer (Customer customer)
+    {
+        if(!getOrdersByCustomer(customer).isEmpty())
+        {
+
+            return DeleteResponse.AlreadyInUse;
+        }
+        else
+        {
+            db.delete(CustomersTable.NAME,
+                    "id = ?",
+                    new String[]{Integer.toString(customer.getId())});
+            return DeleteResponse.Ok;
+        }
+
+    }
+
     //endregion
 
 
@@ -742,26 +952,47 @@ class AssemblyCursor extends CursorWrapper{
         return list;
     }
 
-    public Customer getCustomerById(int id) {
-
-
-        CustomerCursor cursor = new CustomerCursor(db.rawQuery("SELECT * FROM customers WHERE id="+Integer.toString(id)+" ORDER BY id", null));
-        cursor.moveToNext();
-        Customer customer= cursor.getCustomer();
-        cursor.close();
-        return customer;
-
+    public ArrayList<Order> getOrdersByCustomer (Customer customer)
+    {
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                OrdersTable.Columns.CUSTOMER_ID + " = ?",
+                new String[]{Integer.toString(customer.getId())},
+                null, null, null));
+        ArrayList<Order> orders = new ArrayList<Order>();
+        while(cursor.moveToNext())
+        {
+            orders.add(cursor.getOrder());
+        }
+        return orders;
     }
+    //public Customer getCustomerById(int id) {
+//
+//
+    //    CustomerCursor cursor = new CustomerCursor(db.rawQuery("SELECT * FROM customers WHERE id="+Integer.toString(id)+" ORDER BY id", null));
+    //    cursor.moveToNext();
+    //    Customer customer= cursor.getCustomer();
+    //    cursor.close();
+    //    return customer;
+//
+    //}
 
 
     public OrderStatus getOrderStatusById(int id) {
 
 
         OrderStatusCursor cursor = new OrderStatusCursor(db.rawQuery("SELECT * FROM order_status WHERE id="+Integer.toString(id)+" ORDER BY id", null));
-        cursor.moveToNext();
-        OrderStatus orderstatus= cursor.getOrderStatus();
-        cursor.close();
-        return orderstatus;
+        if(cursor.moveToNext())
+        {
+            OrderStatus orderstatus= cursor.getOrderStatus();
+            cursor.close();
+            return orderstatus;
+        }
+        else
+        {
+            return null;
+        }
+
 
     }
 

@@ -8,21 +8,33 @@ public class Customer {
     private int id;
     private String firstName;
     private String lastName;
-    private String adress;
+    private String address;
     private String phone1;
     private String phone2;
     private String phone3;
     private String email;
 
-    public Customer(int id, String firstName, String lastName, String adress, String phone1, String phone2, String phone3, String email) {
+    public Customer(int id, String firstName, String lastName, String address, String phone1, String phone2, String phone3, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.adress = adress;
+        this.address = address;
         this.phone1 = phone1;
         this.phone2 = phone2;
         this.phone3 = phone3;
         this.email = email;
+    }
+
+    public Customer(Customer customer)
+    {
+        this.id = customer.getId();
+        this.firstName = customer.getFirstName();
+        this.lastName = customer.getLastName();
+        this.address = customer.getAddress();
+        this.phone1 = customer.getPhone1();
+        this.phone2 = customer.getPhone2();
+        this.phone3 = customer.getPhone3();
+        this.email = customer.getEmail();
     }
 
     public int getId() {
@@ -49,12 +61,12 @@ public class Customer {
         this.lastName = lastName;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
     public void setAdress(String adress) {
-        this.adress = adress;
+        this.address = address;
     }
 
     public String getPhone1() {

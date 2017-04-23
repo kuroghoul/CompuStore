@@ -31,7 +31,7 @@
                 >
                 <ImageButton
                     android:id="@+id/product_search_button"
-                    android:src="@drawable/search_icon"
+                    android:background="@drawable/search_icon"
 
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -70,6 +70,7 @@
                         android:id="@+id/spinner_filter_by_category"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
+
                     <!--ImageButton
                         android:layout_weight="1"
                         android:layout_width="wrap_content"

@@ -40,7 +40,9 @@
             android:label="@string/title_activity_assembly_insert" />
         <!-- //android:theme="@style/Theme.AppCompat.Light.NoActionBar" -->
         <activity android:name=".android.compustore.AssemblySearchProductActivity" />
-        <activity android:name=".android.compustore.AssemblyModifyActivity"></activity>
+        <activity android:name=".android.compustore.AssemblyModifyActivity" />
+        <activity android:name=".android.compustore.CustomersInsertActivity" />
+        <activity android:name=".android.compustore.CustomersModifyActivity"></activity>
     </application>
 
 </manifest>

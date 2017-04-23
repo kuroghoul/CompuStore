@@ -1,7 +1,6 @@
 package com.fiuady.compustore.android.compustore;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -264,7 +263,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         }
         String[] arraySpinnerStrings = new String [arraySpinnerList.size()];
         arraySpinnerList.toArray(arraySpinnerStrings);
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraySpinnerStrings);
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, arraySpinnerStrings);
 
         spinner=(Spinner)findViewById(R.id.spinner_filter_by_category);
         spinner.setAdapter(spinnerAdapter);
@@ -533,7 +532,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (item.getItemId()== R.id.addProductCategory)
+        if (item.getItemId()== R.id.addItemToDb)
         {
             dialogInsertProduct.show(getSupportFragmentManager(), dialogTagInsert);
             return true;

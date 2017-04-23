@@ -43,6 +43,7 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
     @Override
     public void onDialogConfirmPositiveClick(DialogFragment dialog) {
         Bundle save = ((DialogConfirm)dialog).getSavedData();
+        int position = save.getInt(dialogSaveDataAdapterPosition);
         switch (inventory.deleteAssembly(assemblies.get(save.getInt(dialogSaveDataAdapterPosition))))
         {
             case AlreadyInUse:
@@ -51,6 +52,10 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
             case Ok:
                 Toast.makeText(AssembliesActivity.this, getString(R.string.assembliesActivity_delete_ok).replace("#assembly#", assemblies.get(save.getInt(dialogSaveDataAdapterPosition)).getDescription()), Toast.LENGTH_SHORT).show();
                 //refreshRecyclerView();
+                assemblies.remove(position);
+                //recyclerView.removeViewAt(layoutPosition);
+                adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, assemblies.size());
                 break;
         }
         dialog.dismiss();

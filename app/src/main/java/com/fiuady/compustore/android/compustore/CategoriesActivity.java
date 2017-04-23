@@ -330,7 +330,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId()== R.id.addProductCategory)
+        if (item.getItemId()== R.id.addItemToDb)
         {
             dialogAddCategory.show(getSupportFragmentManager(), dialogTagInsert);
             return true;
