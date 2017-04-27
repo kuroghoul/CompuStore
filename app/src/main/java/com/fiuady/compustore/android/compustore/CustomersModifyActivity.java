@@ -30,6 +30,10 @@ public class CustomersModifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers_insert);
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         Intent intent = getIntent();
         extraCustomerId = intent.getIntExtra(EXTRA_CUSTOMER_ID, -1);
         if(extraCustomerId!=-1)
@@ -107,6 +111,12 @@ public class CustomersModifyActivity extends AppCompatActivity {
                     finish();
                     break;
             }
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
 

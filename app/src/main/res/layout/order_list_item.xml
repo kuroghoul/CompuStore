@@ -10,31 +10,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             >
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical"
                 android:padding="@dimen/activity_horizontal_margin">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/order_options"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_alignParentEnd="true"
+                    android:gravity="end"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
 
-
-                </LinearLayout>
-
-                <View style="@style/CardView.InnerDivisorHorizontal" />
-
+                    android:text="&#8942;"
+                    android:textAppearance="?android:textAppearanceLarge" />
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
+                    android:orientation="vertical"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@id/order_options">
                     <TextView
                         android:id="@+id/order_client_tag"
                         android:layout_width="wrap_content"
@@ -42,24 +42,29 @@
                         android:text="@string/order_client"
                         android:textSize="12sp"
                         android:textStyle="bold" />
-
                     <TextView
                         android:id="@+id/order_client_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="@dimen/activity_horizontal_margin"
                         android:paddingStart="@dimen/activity_horizontal_margin"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
+                        android:textSize="14sp"
                         tools:text="Cliente: " />
                 </LinearLayout>
 
-                <View style="@style/CardView.InnerDivisorHorizontal" />
 
+
+
+            </RelativeLayout>
+            <View style="@style/CardView.InnerDivisorHorizontal" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/order_status_tag"
@@ -67,31 +72,35 @@
                         android:layout_height="wrap_content"
                         android:text="@string/order_status"
                         android:textSize="12sp"
+                        android:layout_gravity="center"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/order_status_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:paddingEnd="@dimen/activity_horizontal_margin"
                         android:paddingStart="@dimen/activity_horizontal_margin"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
+                        android:textSize="14sp"
                         tools:text="Estado: " />
                 </LinearLayout>
 
-                <View style="@style/CardView.InnerDivisorHorizontal" />
+                <View
+                    style="@style/CardView.InnerDivisorVertical"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/order_date_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/order_date"
+                        android:layout_gravity="center"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -101,28 +110,12 @@
                         android:layout_height="wrap_content"
                         android:paddingEnd="@dimen/activity_horizontal_margin"
                         android:paddingStart="@dimen/activity_horizontal_margin"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:textSize="14sp"
                         tools:text="Fecha: " />
                 </LinearLayout>
-
-
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/order_options"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="10dp"
-                    android:text="&#8942;"
-                    android:textAppearance="?android:textAppearanceLarge" />
-            </LinearLayout>
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

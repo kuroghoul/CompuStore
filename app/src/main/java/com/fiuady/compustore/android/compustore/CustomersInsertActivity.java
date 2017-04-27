@@ -27,7 +27,10 @@ public class CustomersInsertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers_insert);
-
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         inventory = new Inventory(this);
 
         firstNameET = (EditText)findViewById(R.id.customers_edit_firstname_text);
@@ -73,6 +76,12 @@ public class CustomersInsertActivity extends AppCompatActivity {
                     finish();
                     break;
             }
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
         else{

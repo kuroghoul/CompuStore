@@ -72,7 +72,10 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
 
         inventory = new Inventory(this);
         setContentView(R.layout.activity_assemblies);
-
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         recyclerView=(RecyclerView)findViewById(R.id.assembly_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -213,6 +216,12 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
         {
             Intent intent = new Intent(this, AssemblyInsertActivity.class);
             startActivityForResult(intent, CODE_MODIFY_ASSEMBLY);
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
         else

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ram_state_back"
+        android:title="Regresar estado a..."
+        />
+
+    <item
+        android:id="@+id/ram_state_forward"
+        android:title="Avanzar estado a..." />
+
+    <item
+        android:id="@+id/ram_modify"
+        android:title="Modificar" />
+
+</menu>

@@ -45,7 +45,7 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
     private static String KEY_PRODUCT_LIST_ID = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListId";
     private static String KEY_PRODUCT_LIST_QTY = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListQty";
 
-    private static int maxQty = 99;
+    private static int maxQty = 999;
     private ArrayList<Product> products;
     private ArrayList<AssemblyProducts> assemblyProducts;
     private ArrayList<Integer> productListId;
@@ -64,7 +64,7 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
 
     @Override
     public void onDialogConfirmNegativeClick(DialogFragment dialog) {
-
+        dialog.dismiss();
     }
 
     @Override
@@ -73,6 +73,8 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
         int position = save.getInt(dialogSaveDataAdapterPosition);
         AssemblyProducts newAssemblyProduct = assemblyProducts.get(position);
         newAssemblyProduct.setQty(value);
+        adapter.notifyDataSetChanged();
+        dialog.dismiss();
     }
 
     @Override
@@ -84,6 +86,10 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assembly_insert);
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         context = this;
         inventory = new Inventory(this);
         intent = getIntent();
@@ -173,6 +179,7 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
         private TextView txtDescription;
         private TextView txtCategory;
         private TextView txtPrice;
+        private TextView txtQtyTag;
         private TextView txtQty;
         private TextView options;
         private int id;
@@ -184,6 +191,7 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
             txtDescription=(TextView)itemView.findViewById(R.id.product_description_text);
             txtCategory=(TextView)itemView.findViewById(R.id.product_category_text);
             txtPrice=(TextView)itemView.findViewById(R.id.product_price_text);
+            txtQtyTag = (TextView)itemView.findViewById(R.id.product_qty_tag);
             txtQty=(TextView)itemView.findViewById(R.id.product_qty_text);
             options=(TextView)itemView.findViewById(R.id.product_options);
 
@@ -202,10 +210,10 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
                                 case R.id.me_modify:{
                                     Bundle save = new Bundle();
                                     save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
-                                    String message = getString(R.string.dialogNumberPicker_products_addStock_message);
+                                    String message = "Seleccionar cantidad";
                                     String positivetxt = getString(R.string.dialogNumberPicker_products_addStock_positivebtn);
                                     String negativetxt = getString(R.string.dialogNumberPicker_products_addStock_negativebtn);
-                                    int min = products.get(getAdapterPosition()).getQty();
+                                    int min = 1;
                                     int max = maxQty;
 
 
@@ -237,7 +245,8 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
             txtDescription.setText(product.getDescription());
             txtCategory.setText(product.getProductCategory().getDescription());
             txtPrice.setText(Integer.toString(product.getPrice()));
-            txtQty.setText(Integer.toString(product.getQty()));
+            txtQtyTag.setText("Cantidad");
+            txtQty.setText(Integer.toString(assemblyProduct.getQty()));
         }
 
         @Override
@@ -332,6 +341,12 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
             }
             return true;
             }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
+        }
 
         else
         {

@@ -7,7 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light">
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         <activity
             android:name=".android.compustore.MainActivity"
             android:theme="@style/AppThemeNoTitle">
@@ -42,7 +42,10 @@
         <activity android:name=".android.compustore.AssemblySearchProductActivity" />
         <activity android:name=".android.compustore.AssemblyModifyActivity" />
         <activity android:name=".android.compustore.CustomersInsertActivity" />
-        <activity android:name=".android.compustore.CustomersModifyActivity"></activity>
+        <activity android:name=".android.compustore.CustomersModifyActivity" />
+        <activity android:name=".android.compustore.OrdersInsertActivity" />
+        <activity android:name=".android.compustore.OrdersModifyActivity" />
+        <activity android:name=".android.compustore.OrderSearchAssemblyActivity"></activity>
     </application>
 
 </manifest>

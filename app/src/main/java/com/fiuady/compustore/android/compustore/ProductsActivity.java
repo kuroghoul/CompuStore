@@ -229,12 +229,12 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-
-
-
-
         setContentView(R.layout.activity_products);
+
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         this.context = this;
         Bundle args = new Bundle();
         args.putString(DialogCategory.ARG_TITLE, getString(R.string.dialogProduct_insert_title));
@@ -263,7 +263,7 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         }
         String[] arraySpinnerStrings = new String [arraySpinnerList.size()];
         arraySpinnerList.toArray(arraySpinnerStrings);
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, arraySpinnerStrings);
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraySpinnerStrings);
 
         spinner=(Spinner)findViewById(R.id.spinner_filter_by_category);
         spinner.setAdapter(spinnerAdapter);
@@ -535,6 +535,12 @@ public class ProductsActivity extends AppCompatActivity implements DialogProduct
         if (item.getItemId()== R.id.addItemToDb)
         {
             dialogInsertProduct.show(getSupportFragmentManager(), dialogTagInsert);
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
         else

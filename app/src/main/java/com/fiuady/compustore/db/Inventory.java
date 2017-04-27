@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.fiuady.compustore.db.InventoryDbSchema.*;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -24,10 +26,12 @@ public final class Inventory extends Application {
     private  InventoryHelper inventoryHelper;
     private  SQLiteDatabase db;
 
-    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidFirstName, InvalidLastName, InvalidAddress}
+    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidCustomer, InvalidAssembliesList}
     public enum DeleteResponse {Ok, AlreadyInUse}
-    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId, InvalidFirstName, InvalidLastName, InvalidAddress}
+    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidOrderStatus, InvalidOrderAssemblies, InvalidChangelog}
     public enum CustomerFilters {Default, FirstName, LastName, Address, Phone, Email}
+    public enum SortDB {Descending, Ascending}
+
 
     public Inventory(Context context){
 
@@ -89,7 +93,7 @@ class AssemblyCursor extends CursorWrapper{
             Cursor cursor = getWrappedCursor();
             return new OrderStatus(cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.ID)),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.DESCRIPTION)),
-                    cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.EDITABLE)),
+                    (cursor.getInt(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.EDITABLE))!=0),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.PREVIOUS)),
                     cursor.getString(cursor.getColumnIndex(InventoryDbSchema.OrderStatusTable.Columns.NEXT)));
         }
@@ -138,6 +142,16 @@ class AssemblyCursor extends CursorWrapper{
             return new AssemblyProducts(cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.ID)),
                     cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.PRODUCT_ID)),
                     cursor.getInt(cursor.getColumnIndex(AssemblyProductsTable.Columns.QTY)));
+        }
+    }
+
+    class OrderAssembliesCursor extends CursorWrapper{
+        public OrderAssembliesCursor (Cursor cursor){super(cursor);}
+        public OrderAssemblies getOrderAssembly(){
+            Cursor cursor = getWrappedCursor();
+            return new OrderAssemblies(getOrderById(cursor.getInt(cursor.getColumnIndex(OrderAssembliesTable.Columns.ID))),
+                    getAssemblyById(cursor.getInt(cursor.getColumnIndex(OrderAssembliesTable.Columns.ASSEMBLY_ID))),
+                    cursor.getInt(cursor.getColumnIndex(OrderAssembliesTable.Columns.QTY)));
         }
     }
     //---------------------------------------------------------------------------------------
@@ -624,8 +638,8 @@ class AssemblyCursor extends CursorWrapper{
                         AssembliesTable.Columns.ID + " = ? ",
                         new String[]{Integer.toString(assembly.getId())});
 
-                db.delete(AssemblyProductsTable.NAME, "ID = ?", new String[]{Integer.toString(assembly.getId())});
                 if(products!=null) {
+                    db.delete(AssemblyProductsTable.NAME, AssemblyProductsTable.Columns.ID + " = ?", new String[]{Integer.toString(assembly.getId())});
                     for (AssemblyProducts assemblyP : products )
                     {
                         ContentValues valuesAP = new ContentValues();
@@ -762,7 +776,6 @@ class AssemblyCursor extends CursorWrapper{
         {
             for(CustomerFilters filter : filters)
             {
-
                 switch (filter){
                     case FirstName:
                         if(selection.length()!=0)
@@ -940,10 +953,16 @@ class AssemblyCursor extends CursorWrapper{
     //region Orders Methods
     //---------------------------------------------------------------------------------------
 
-    public List<Order> getAllOrders()
+    public ArrayList<Order> getAllOrders()
     {
         ArrayList<Order> list = new ArrayList<Order>();
-        OrderCursor cursor = new OrderCursor(db.rawQuery("SELECT * FROM orders ORDER BY id", null));
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "date("+OrdersTable.Columns.DATE+") DESC"));
         while (cursor.moveToNext())
         {
             list.add(cursor.getOrder());
@@ -958,7 +977,7 @@ class AssemblyCursor extends CursorWrapper{
                 null,
                 OrdersTable.Columns.CUSTOMER_ID + " = ?",
                 new String[]{Integer.toString(customer.getId())},
-                null, null, null));
+                null, null, "date("+OrdersTable.Columns.DATE+") DESC"));
         ArrayList<Order> orders = new ArrayList<Order>();
         while(cursor.moveToNext())
         {
@@ -992,9 +1011,315 @@ class AssemblyCursor extends CursorWrapper{
         {
             return null;
         }
-
-
     }
+
+
+
+
+    public ArrayList<OrderStatus> getAllOrderStatus ()
+    {
+        ArrayList<OrderStatus> list = new ArrayList<OrderStatus>();
+        OrderStatusCursor cursor = new OrderStatusCursor(db.query(OrderStatusTable.NAME,
+                null,
+                null, null, null, null,
+                OrderStatusTable.Columns.DESCRIPTION));
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getOrderStatus());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public ArrayList<Order> getOrdersByCustomerAndOrderStatus (Customer customer, OrderStatus orderStatus)
+    {
+        ArrayList<Order> list = new ArrayList<>();
+        String selection = "(" + OrdersTable.Columns.CUSTOMER_ID + " = ?) AND " + "(" + OrdersTable.Columns.STATUS_ID + " = ?)";
+        String selectionArgs[] = new String[]{Integer.toString(customer.getId()), Integer.toString(orderStatus.getId())};
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                "date("+OrdersTable.Columns.DATE+") DESC"));
+        while(cursor.moveToNext())
+        {
+            list.add(cursor.getOrder());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public ArrayList<Order> getOrdersByCustomerAndOrderStatus2 (Customer customer, ArrayList<OrderStatus> orderStatusList, Calendar fromC, Calendar untilC, SortDB sortEnum)
+    {
+
+        ArrayList<Order> list = new ArrayList<>();
+        StringBuilder selection = new StringBuilder("");
+
+        if(customer != null) {
+            selection.append("(" + OrdersTable.Columns.CUSTOMER_ID + " = " + customer.getId() + ")");
+            if (!orderStatusList.isEmpty())
+            {
+                selection.append(" AND ");
+            }
+        }
+        if (!orderStatusList.isEmpty()) {
+            selection.append("(");
+            for (int i = 0; i < orderStatusList.size(); i++) {
+                selection.append(OrdersTable.Columns.STATUS_ID + " = " + Integer.toString(orderStatusList.get(i).getId()));
+                if (i + 1 != orderStatusList.size()) {
+                    selection.append(" OR ");
+                }
+            }
+            selection.append(")");
+
+            if (fromC != null && untilC != null)
+            {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                selection.append(" AND (date(proper_date) BETWEEN date('" +formatter.format(fromC.getTime())+ "') AND date('" +formatter.format(untilC.getTime())+ "'))");
+            }
+            String sort = "";
+            switch (sortEnum)
+            {
+                case Ascending:
+                    sort = " ASC ";
+                    break;
+                case Descending:
+                    sort = " DESC ";
+                    break;
+            }
+            OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                    new String[]{
+                            " *, substr(date, 7,4) || '-' || " +
+                            "  substr(date, 4, 2)|| '-' || " +
+                            "  substr(date, 1, 2) as proper_date "
+                        },
+                    selection.toString(),
+                    null,
+                    null,
+                    null,
+                    "date(proper_date) " + sort + ", " + OrdersTable.Columns.ID + " " + sort));
+            while(cursor.moveToNext())
+            {
+                list.add(cursor.getOrder());
+            }
+            cursor.close();
+        }
+        return list;
+    }
+
+    public Order getNewestOrder ()
+    {
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                new String[]{
+                        " *, substr(date, 7,4) || '-' || " +
+                                "  substr(date, 4, 2)|| '-' || " +
+                                "  substr(date, 1, 2) as proper_date "
+                },
+                null,
+                null,
+                null,
+                null,
+                "date(proper_date) DESC, id DESC LIMIT 1"));
+
+        if(cursor.moveToNext())
+        {
+            Order order = cursor.getOrder();
+            cursor.close();
+            return order;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public Order getOldestOrder ()
+    {
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                new String[]{
+                        " *, substr(date, 7,4) || '-' || " +
+                        "  substr(date, 4, 2)|| '-' || " +
+                        "  substr(date, 1, 2) as proper_date "
+                    },
+                null,
+                null,
+                null,
+                null,
+                "date(proper_date) ASC, id ASC LIMIT 1"));
+
+        if(cursor.moveToNext())
+        {
+            Order order = cursor.getOrder();
+            cursor.close();
+            return order;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    public Order getOrderById (int id)
+    {
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                OrdersTable.Columns.ID + " = " + String.valueOf(id),
+                null, null, null, null));
+        if (cursor.moveToNext())
+        {
+            Order order = cursor.getOrder();
+            cursor.close();
+            return order;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public ArrayList<OrderAssemblies> getOrderAssembliesById(int orderId)
+    {
+        OrderAssembliesCursor cursor = new OrderAssembliesCursor(db.query(OrderAssembliesTable.NAME,
+                null,
+                OrderAssembliesTable.Columns.ID + " = " + String.valueOf(orderId),
+                null, null, null, null));
+        ArrayList<OrderAssemblies> orderAssemblies = new ArrayList<OrderAssemblies>();
+        while (cursor.moveToNext())
+        {
+            orderAssemblies.add(cursor.getOrderAssembly());
+        }
+        cursor.close();
+        return orderAssemblies;
+    }
+
+    public ArrayList<Order> getOrdersByOrderStatus (OrderStatus orderStatus)
+    {
+        ArrayList<Order> list = new ArrayList<>();
+        String selection = OrdersTable.Columns.STATUS_ID + " = ? ";
+        String selectionArgs[] = new String[]{Integer.toString(orderStatus.getId())};
+        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                "date("+OrdersTable.Columns.DATE+") DESC"));
+        while(cursor.moveToNext())
+        {
+            list.add(cursor.getOrder());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public InsertResponse insertOrder (Customer customer, ArrayList<Assembly> assemblies, ArrayList<Integer> qtys)
+    {
+        if(getCustomerById(customer.getId())!=null)
+        {
+            if(!assemblies.isEmpty() && assemblies.size()==qtys.size())
+                {
+                int newId = getNewIdFrom(OrdersTable.NAME);
+                ContentValues values = new ContentValues();
+                values.put(OrdersTable.Columns.ID, newId);
+                values.put(OrdersTable.Columns.STATUS_ID, 0);//asumimos que el ID de pendiente siempre será 0
+                values.put(OrdersTable.Columns.CUSTOMER_ID, customer.getId());
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                values.put(OrdersTable.Columns.DATE, formatter.format(calendar.getTime()));
+                values.putNull(OrdersTable.Columns.CHANGELOG);
+                db.insert(OrdersTable.NAME, null, values);
+
+
+                for (int i=0; i<assemblies.size() ; i++)
+                {
+                    ContentValues values2 = new ContentValues();
+                    values2.put(OrderAssembliesTable.Columns.ID, newId);
+                    values2.put(OrderAssembliesTable.Columns.ASSEMBLY_ID, assemblies.get(i).getId());
+                    values2.put(OrderAssembliesTable.Columns.QTY, qtys.get(i));
+                    db.insert(OrderAssembliesTable.NAME, null, values2);
+                }
+                return InsertResponse.Ok;
+            }
+            else
+            {
+                return  InsertResponse.InvalidAssembliesList;
+            }
+        }
+        else
+        {
+            return InsertResponse.InvalidCustomer;
+        }
+    }
+
+
+    public ModifyResponse modifyOrder (Order order, ArrayList<OrderAssemblies> orderAssemblies)
+    {
+        if(order.getOrderStatus().getId()!=0) //Checar estado pendiente
+        {
+            return ModifyResponse.InvalidOrderStatus;
+        }
+        else
+        {
+            if(orderAssemblies!=null && !orderAssemblies.isEmpty())
+            {
+                db.delete(OrderAssembliesTable.NAME, OrderAssembliesTable.Columns.ID + " = ? ", new String[]{Integer.toString(order.getId())});
+                for(OrderAssemblies orderAssembly : orderAssemblies)
+                {
+                    ContentValues values = new ContentValues();
+                    values.put(OrderAssembliesTable.Columns.ID, order.getId());
+                    values.put(OrderAssembliesTable.Columns.ASSEMBLY_ID, orderAssembly.getAssembly().getId());
+                    values.put(OrderAssembliesTable.Columns.QTY, orderAssembly.getQty());
+                    db.insert(OrderAssembliesTable.NAME, null, values);
+                }
+                return ModifyResponse.Ok;
+            }
+            else
+            {
+                return ModifyResponse.InvalidOrderAssemblies;
+            }
+
+        }
+    }
+
+    public ModifyResponse modifyOrderState (Order order, int orderStatusId, String changelog)
+    {
+
+
+        if((getOrderStatusById(orderStatusId)==null))
+        {
+            return ModifyResponse.InvalidOrderStatus;
+        }
+        else if(changelog.trim().equals(""))
+        {
+            return ModifyResponse.InvalidChangelog;
+        }
+        else
+        {
+            Calendar calendar = Calendar.getInstance();
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            formatter.format(calendar.getTime());
+            String changelogOrderStatusChange = (" ["+order.getOrderStatus().getDescription() + "->" + getOrderStatusById(orderStatusId).getDescription() + "]");
+            String setChangelog = (getOrderById(order.getId()).getChangeLog()==null ? ("'Logs:\n" + formatter.format(calendar.getTime()) +changelogOrderStatusChange+ ": " + changelog + "'") : ("substr(" + OrdersTable.Columns.CHANGELOG + " || '\n" + formatter.format(calendar.getTime())+changelogOrderStatusChange + ": " + changelog + "', " + OrdersTable.Columns.CHANGELOG + ")" ));
+            String query = "UPDATE " + OrdersTable.NAME +
+                    " SET " + OrdersTable.Columns.CHANGELOG + " = "+ setChangelog +", "
+                    + OrdersTable.Columns.STATUS_ID + " = " + String.valueOf(orderStatusId)
+                    + " WHERE " + OrdersTable.Columns.ID + " = " + String.valueOf(order.getId());
+
+            Cursor cursor = db.rawQuery(query,
+                    null);
+            cursor.moveToNext();
+            cursor.close();
+
+            Order newOrder = getOrderById(order.getId());
+            String changeloged = newOrder.getChangeLog();
+            return ModifyResponse.Ok;
+        }
+    }
+
 
     //---------------------------------------------------------------------------------------
     //endregion

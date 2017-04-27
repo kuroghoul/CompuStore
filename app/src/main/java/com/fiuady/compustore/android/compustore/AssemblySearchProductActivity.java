@@ -41,6 +41,9 @@ public class AssemblySearchProductActivity extends AppCompatActivity {
     public static String EXTRA_PRODUCT_ID = "com.fiuady.compustore.android.compustore.assemblySearchProductActivity.extraProductId";
     public static String EXTRA_IGNORE_PRODUCT_ID = "com.fiuady.compustore.android.compustore.assemblySearchProductActivity.extraIgnoreProductId";
 
+    private static String KEY_SPINNER_POSITION = "com.fiuady.compustore.android.compustore.assemblySearchProductActivity.spinnerposition";
+    private static String KEY_FLAG_RESTORESEARCH = "com.fiuady.compustore.android.compustore.assemblySearchProductActivity.restoresearch";
+
     private Inventory inventory;
     private RecyclerView recyclerView;
     private AssemblySearchProductActivity.ProductsAdapter adapter;
@@ -56,7 +59,7 @@ public class AssemblySearchProductActivity extends AppCompatActivity {
     private EditTextSearch searchText;
     private ImageButton searchButton;
 
-    private DialogProduct dialogInsertProduct;
+    //private DialogProduct dialogInsertProduct;
 
     boolean Flag_restoreSearch;
 
@@ -67,20 +70,20 @@ public class AssemblySearchProductActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
-
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         productsIgnoreId=getIntent().getIntegerArrayListExtra(EXTRA_IGNORE_PRODUCT_ID);
 
         this.context = this;
-        Bundle args = new Bundle();
-        args.putString(DialogCategory.ARG_TITLE, getString(R.string.dialogProduct_insert_title));
-        args.putString(DialogCategory.ARG_BTN_POSITIVE, getString(R.string.dialogProduct_insert_positivebtn));
-        args.putString(DialogCategory.ARG_BTN_NEGATIVE, getString(R.string.dialogProduct_insert_negativebtn));
+        //Bundle args = new Bundle();
+        //args.putString(DialogCategory.ARG_TITLE, getString(R.string.dialogProduct_insert_title));
+        //args.putString(DialogCategory.ARG_BTN_POSITIVE, getString(R.string.dialogProduct_insert_positivebtn));
+        //args.putString(DialogCategory.ARG_BTN_NEGATIVE, getString(R.string.dialogProduct_insert_negativebtn));
 
-        dialogInsertProduct = DialogProduct.newInstance(dialogTagInsert, args);
-        //dialogInsertProduct.setArguments(dialogBundle);
-        //dialogInsertProduct = DialogCategory.newInstance(dialogBundle);
+        //dialogInsertProduct = DialogProduct.newInstance(dialogTagInsert, args);
 
-        //dialogInsertProduct.getBuilder().setTitle("HOLA!!!");
 
         inventory = new Inventory(this);
         products = inventory.getAllProducts();
@@ -142,6 +145,28 @@ public class AssemblySearchProductActivity extends AppCompatActivity {
                 searchProducts();
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_SPINNER_POSITION, spinner.getSelectedItemPosition());
+        outState.putBoolean(KEY_FLAG_RESTORESEARCH, Flag_restoreSearch);
+        if (Flag_restoreSearch)
+        {
+            refreshRecyclerView();
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        spinner.setSelection(savedInstanceState.getInt(KEY_SPINNER_POSITION));
+        Flag_restoreSearch = savedInstanceState.getBoolean(KEY_FLAG_RESTORESEARCH);
+        if (Flag_restoreSearch)
+        {
+            refreshRecyclerView();
+        }
     }
 
     private void refreshRecyclerView() {
@@ -305,10 +330,18 @@ public class AssemblySearchProductActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-
-
-
-
-
+        if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
+        }
+        else
+        {
+            return super.onOptionsItemSelected(item);
+        }
+    }
 }

@@ -64,6 +64,12 @@ public class CustomersActivity extends AppCompatActivity implements DialogConfir
         inventory = new Inventory(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers);
+
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         recyclerView=(RecyclerView)findViewById(R.id.customers_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -241,14 +247,6 @@ public class CustomersActivity extends AppCompatActivity implements DialogConfir
                 }
                 //convertView.setTag(holder);
 
-
-
-            // To check weather checked event fire from getview() or user input
-            //isFromView = true;
-            //holder.mCheckBox.setChecked(listState.get(position).isSelected());
-            //isFromView = false;
-
-
             return convertView;
         }
 
@@ -268,11 +266,31 @@ public class CustomersActivity extends AppCompatActivity implements DialogConfir
         public void bindStateVo (final StateVO stateVO)
         {
             mTextView.setText(stateVO.getTitle());
+            if(stateVO.getCustomerFilter()== Inventory.CustomerFilters.Default)
+            {
+                stateVO.setSelected(false);
+            }
+            else
+            {
+                mTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mCheckBox.setChecked(!mCheckBox.isChecked());
+                    }
+                });
+            }
             mCheckBox.setChecked(stateVO.isSelected());
+
             mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     stateVO.setSelected(isChecked);
+                    if (Flag_restoreSearch)
+                    {
+                        searchCustomers();
+                    }
+
+
                 }
             });
         }
@@ -473,11 +491,16 @@ public class CustomersActivity extends AppCompatActivity implements DialogConfir
             Intent intent = new Intent(this, CustomersInsertActivity.class);
             startActivityForResult(intent, CODE_INSERT_CUSTOMER);
             return true;
-
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
         }
         else{
         return super.onOptionsItemSelected(item);
-    }
+        }
     }
 
 

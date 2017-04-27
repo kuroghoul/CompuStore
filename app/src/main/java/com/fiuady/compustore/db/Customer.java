@@ -100,4 +100,11 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getFullName()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append(firstName).append(" ").append(lastName);
+        return builder.toString();
+    }
 }

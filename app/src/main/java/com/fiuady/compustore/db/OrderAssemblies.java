@@ -1,5 +1,6 @@
 package com.fiuady.compustore.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,37 +8,37 @@ import java.util.List;
  */
 
 public class OrderAssemblies {
-    private int id;
-    private List<Assembly> assemblies;
-    private List<Integer> qty;
+    private Order order;
+    private Assembly assembly;
+    private int qty;
 
-    public OrderAssemblies(int id, List<Assembly> assemblies, List<Integer> qty) {
-        this.id = id;
-        this.assemblies = assemblies;
+    public OrderAssemblies(Order order, Assembly assembly, int qty) {
+        this.order = order;
+        this.assembly = assembly;
         this.qty = qty;
     }
 
-    public int getId() {
-        return id;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
-    public List<Assembly> getAssemblies() {
-        return assemblies;
+    public Assembly getAssembly() {
+        return assembly;
     }
 
-    public void setAssemblies(List<Assembly> assemblies) {
-        this.assemblies = assemblies;
+    public void setAssembly(Assembly assembly) {
+        this.assembly = assembly;
     }
 
-    public List<Integer> getQty() {
+    public int getQty() {
         return qty;
     }
 
-    public void setQty(List<Integer> qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 }

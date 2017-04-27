@@ -68,6 +68,12 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assembly_insert);
+
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         context = this;
         inventory = new Inventory(this);
         productList = new ArrayList<Product>();
@@ -99,6 +105,7 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new AssemblyInsertActivity.ProductsAdapter(productList, this);
         recyclerView.setAdapter(adapter);
+
     }
 
 
@@ -283,6 +290,7 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_action_assemblies_insert,menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -306,6 +314,12 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
                     finish();
                     break;
             }
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
         else

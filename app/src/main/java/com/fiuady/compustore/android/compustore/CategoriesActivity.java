@@ -133,7 +133,10 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
-
+        if(getSupportActionBar()!=null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         inventory = new Inventory(this);
         Bundle args = new Bundle();
         args.putString(DialogCategory.ARG_TITLE, getString(R.string.dialogCategory_insert_title));
@@ -333,6 +336,12 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
         if (item.getItemId()== R.id.addItemToDb)
         {
             dialogAddCategory.show(getSupportFragmentManager(), dialogTagInsert);
+            return true;
+        }
+        else if(item.getItemId()==android.R.id.home)
+        {
+            setResult(RESULT_CANCELED);
+            finish();
             return true;
         }
         else
