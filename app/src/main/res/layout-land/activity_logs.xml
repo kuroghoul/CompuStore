@@ -13,22 +13,29 @@
     tools:context="com.fiuady.compustore.android.compustore.LogsActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:padding="@dimen/activity_vertical_margin">
 
         <ImageButton
             android:id="@+id/logsactivity_imgbtn_processByCustomer"
-            android:layout_width="60dp"
-            android:layout_height="60dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/log1land"/>
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/log2land"
             android:id="@+id/logsactivity_imgbtn_processByDate"/>
         <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/log3land"
             android:id="@+id/logsactivity_imgbtn_processByTotal"/>
 
     </LinearLayout>
