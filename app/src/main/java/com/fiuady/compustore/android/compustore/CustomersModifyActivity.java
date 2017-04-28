@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Customer;
@@ -101,10 +102,19 @@ public class CustomersModifyActivity extends AppCompatActivity {
             switch (inventory.modifyCustomer(newCustomer))
             {
                 case InvalidFirstName:
+                    Toast.makeText(CustomersModifyActivity.this, "Nombre no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case InvalidLastName:
+                    Toast.makeText(CustomersModifyActivity.this, "Apellido no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case InvalidAddress:
+                    Toast.makeText(CustomersModifyActivity.this, "No se ha introducido una dirección válida", Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidPhone:
+                    Toast.makeText(CustomersModifyActivity.this, "El teléfono introducido debe ser de 10 dígitos", Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidEmail:
+                    Toast.makeText(CustomersModifyActivity.this, "Email no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case Ok:
                     setResult(RESULT_OK);

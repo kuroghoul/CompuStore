@@ -65,10 +65,19 @@ public class CustomersInsertActivity extends AppCompatActivity {
                     emailET.getText().toString()))
             {
                 case InvalidFirstName:
+                    Toast.makeText(CustomersInsertActivity.this, "Nombre no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case InvalidLastName:
+                    Toast.makeText(CustomersInsertActivity.this, "Apellido no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case InvalidAddress:
+                    Toast.makeText(CustomersInsertActivity.this, "No se ha introducido una dirección válida", Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidPhone:
+                    Toast.makeText(CustomersInsertActivity.this, "El teléfono introducido debe ser de 10 dígitos", Toast.LENGTH_SHORT).show();
+                    break;
+                case InvalidEmail:
+                    Toast.makeText(CustomersInsertActivity.this, "Email no válido", Toast.LENGTH_SHORT).show();
                     break;
                 case Ok:
                     Toast.makeText(CustomersInsertActivity.this, "Cliente agregado con éxito", Toast.LENGTH_SHORT).show();

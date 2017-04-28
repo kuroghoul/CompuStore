@@ -144,6 +144,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
         args.putString(DialogCategory.ARG_BTN_NEGATIVE, getString(R.string.dialogCategory_insert_negativebtn));
 
         dialogAddCategory = DialogCategory.newInstance(dialogTagInsert, args);
+        dialogAddCategory.setCancelable(false);
 
         //dialogAddCategory.setDialogNewCategoryListener(new DialogCategory.DialogCategoryListener() {
         //    @Override
@@ -257,6 +258,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
                                     args.putBundle(DialogCategory.ARG_SAVE_DATA, save);
 
                                     DialogCategory modifyCategory = DialogCategory.newInstance(dialogTagModify, args);
+                                    modifyCategory.setCancelable(false);
                                     modifyCategory.show(getSupportFragmentManager(),dialogTagModify);
 
 
@@ -267,6 +269,7 @@ public class CategoriesActivity extends AppCompatActivity implements DialogCateg
                                     Bundle bundle = new Bundle();
                                     bundle.putInt(dialogSaveDataAdapterPosition, holder.getAdapterPosition());
                                     DialogConfirm confirmDelete = DialogConfirm.newInstance( getString(R.string.dialogConfirm_category_delete_message).replace("#category#",categories.get(holder.getAdapterPosition()).getDescription()) , getString(R.string.dialogConfirm_Category_delete_positivebtn),getString(R.string.dialogConfirm_Category_delete_negativebtn),bundle);
+                                    confirmDelete.setCancelable(false);
                                     confirmDelete.show(getSupportFragmentManager(),dialogTagDelete);
                                     //alert = new AlertDialog.Builder(
                                     //        CategoriesActivity.this);

@@ -25,7 +25,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/customers_edit_firstname_tag"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                />
         </RelativeLayout>
 
         <RelativeLayout
@@ -80,7 +81,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/customers_edit_phone1_tag"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:inputType="number"
+                android:maxLength="10"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -98,7 +101,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/customers_edit_phone2_tag"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:inputType="number"
+                android:maxLength="10"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -116,7 +121,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/customers_edit_phone3_tag"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:inputType="number"
+                android:maxLength="10"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -134,7 +141,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/customers_edit_email_tag"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:inputType="textEmailAddress"/>
         </RelativeLayout>
 
     </LinearLayout>

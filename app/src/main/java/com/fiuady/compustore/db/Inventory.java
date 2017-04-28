@@ -6,6 +6,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Patterns;
+
 import com.fiuady.compustore.db.InventoryDbSchema.*;
 
 
@@ -26,9 +28,9 @@ public final class Inventory extends Application {
     private  InventoryHelper inventoryHelper;
     private  SQLiteDatabase db;
 
-    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidCustomer, InvalidAssembliesList}
+    public enum InsertResponse {Ok, DuplicateId, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidPhone, InvalidEmail, InvalidCustomer, InvalidAssembliesList}
     public enum DeleteResponse {Ok, AlreadyInUse}
-    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidOrderStatus, InvalidOrderAssemblies, InvalidChangelog}
+    public enum ModifyResponse {Ok, DuplicateDescription, InvalidDescription, InvalidPrice, InvalidCategory, InvalidId, InvalidFirstName, InvalidLastName, InvalidAddress, InvalidPhone, InvalidEmail, InvalidOrderStatus, InvalidOrderAssemblies, InvalidChangelog}
     public enum CustomerFilters {Default, FirstName, LastName, Address, Phone, Email}
     public enum SortDB {Descending, Ascending}
 
@@ -869,7 +871,22 @@ class AssemblyCursor extends CursorWrapper{
         {
             return InsertResponse.InvalidAddress;
         }
-
+        else if(!phone1.equals("") && phone1.length()<10)
+        {
+            return InsertResponse.InvalidPhone;
+        }
+        else if(!phone2.equals("") && phone2.length()<10)
+        {
+            return InsertResponse.InvalidPhone;
+        }
+        else if(!phone3.equals("") && phone2.length()<10)
+        {
+            return InsertResponse.InvalidPhone;
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        {
+            return InsertResponse.InvalidEmail;
+        }
         else
         {
             int newId = getNewIdFrom(CustomersTable.NAME);
@@ -902,6 +919,22 @@ class AssemblyCursor extends CursorWrapper{
         else if (newCustomer.getAddress().equals(""))
         {
             return ModifyResponse.InvalidAddress;
+        }
+        else if(!newCustomer.getPhone1().equals("") && newCustomer.getPhone1().length()<10)
+        {
+            return ModifyResponse.InvalidPhone;
+        }
+        else if(!newCustomer.getPhone2().equals("") && newCustomer.getPhone2().length()<10)
+        {
+            return ModifyResponse.InvalidPhone;
+        }
+        else if(!newCustomer.getPhone3().equals("") && newCustomer.getPhone3().length()<10)
+        {
+            return ModifyResponse.InvalidPhone;
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(newCustomer.getEmail()).matches())
+        {
+            return ModifyResponse.InvalidEmail;
         }
         else
         {

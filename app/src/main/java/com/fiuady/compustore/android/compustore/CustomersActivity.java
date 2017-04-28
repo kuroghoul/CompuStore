@@ -243,7 +243,7 @@ public class CustomersActivity extends AppCompatActivity implements DialogConfir
 
                 if(position == 0)
                 {
-                    holder.mCheckBox.setVisibility(View.INVISIBLE);
+                    holder.mCheckBox.setVisibility(View.GONE);
                 }
                 //convertView.setTag(holder);
 
