@@ -10,107 +10,167 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.fiuady.compustore.android.compustore.MainActivity">
+    android:background="@drawable/white"
+    tools:context="com.fiuady.compustore.android.compustore.MainActivity"
+    >
+
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="hola"/>
-    </LinearLayout>
-
-    <android.support.v7.widget.GridLayout
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        app:columnCount="3"
-        app:rowCount="2"
-        >
-        <ImageButton
-            android:id="@+id/Categories"
-            app:layout_column="0"
-            app:layout_row="0"
+        android:orientation="vertical"
+        android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/categorias"
-            android:scaleType="fitXY"
-            android:padding="5dp"
-            />
-        <ImageButton
-            android:id="@+id/Products"
-            app:layout_column="1"
-            app:layout_row="0"
+            android:layout_weight="1"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:text="Bienvenido a CompuStore"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/ordenes"
-            android:scaleType="fitXY"
-            android:padding="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin">
+                <ImageButton
+                    android:id="@+id/Categories"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/categorias"
+                    android:background="@android:color/transparent"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CATEGORÍAS"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/Products"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:src="@drawable/productos"
+                    android:layout_alignParentBottom="true"
+                    android:scaleType="fitCenter"
+                    android:background="@android:color/transparent"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PRODUCTOS"/>
+            </LinearLayout>
 
-            />
-        <ImageButton
-            android:id="@+id/Assemblies"
-            app:layout_column="2"
-            app:layout_row="0"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/Assemblies"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:src="@drawable/ensambles"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/transparent"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ENSAMBLES"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/ensambles"
-            android:scaleType="fitXY"
-            android:padding="5dp"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:gravity="center">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/Clients"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:src="@drawable/clientes"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CLIENTES"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/Orders"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:src="@drawable/ordenes"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ÓRDENES"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:gravity="center">
+                <ImageButton
+                    android:id="@+id/Logs"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:src="@drawable/reportes"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="REPORTES"/>
+            </LinearLayout>
 
 
-            />
-
-        <ImageButton
-            android:id="@+id/Clients"
-            app:layout_column="0"
-            app:layout_row="1"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/clientes"
-            android:scaleType="fitXY"
-            android:padding="5dp"
-            />
-
-        <ImageButton
-            android:id="@+id/Orders"
-            app:layout_column="1"
-            app:layout_row="1"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/ordenes"
-            android:scaleType="fitXY"
-            android:padding="5dp"
-            />
-        <ImageButton
-            android:id="@+id/Logs"
-            app:layout_column="2"
-            app:layout_row="1"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:layout_columnWeight="1"
-            app:layout_rowWeight="1"
-            android:src="@drawable/reportes"
-            android:scaleType="fitXY"
-            android:padding="5dp"
-            />
-
-
-
-    </android.support.v7.widget.GridLayout>
-
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

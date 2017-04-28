@@ -66,7 +66,7 @@ public class OrdersActivity extends AppCompatActivity implements DialogDatePicke
 
     private Spinner spinnerSort;
     private final static String[] spinnerSortStrings = {"Reciente", "Antiguo"};
-    Inventory.SortDB selectedSort;
+    private Inventory.SortDB selectedSort;
 
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.ordersactivity.dialogtagdelete";
     private static String dialogDateTagFrom = "com.fiuady.compustore.android.compustore.ordersactivity.dialogDateTagFrom";
@@ -422,7 +422,7 @@ public class OrdersActivity extends AppCompatActivity implements DialogDatePicke
 
         @Override
         public int getItemCount() {
-            return orders.size();
+            return orders1.size();
         }
     }
 

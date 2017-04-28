@@ -156,6 +156,16 @@ class AssemblyCursor extends CursorWrapper{
                     cursor.getInt(cursor.getColumnIndex(OrderAssembliesTable.Columns.QTY)));
         }
     }
+
+    class MonthSaleCursor extends CursorWrapper{
+        public  MonthSaleCursor (Cursor cursor){super(cursor);}
+        public MonthSale getMonthSale(){
+            Cursor cursor = getWrappedCursor();
+            return new MonthSale(cursor.getString(cursor.getColumnIndex(OrdersTable.Columns.DATE)),
+                    cursor.getInt(cursor.getColumnIndex("total")));
+        }
+    }
+
     //---------------------------------------------------------------------------------------
     //endregion
 
@@ -1112,15 +1122,18 @@ class AssemblyCursor extends CursorWrapper{
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                 selection.append(" AND (date(proper_date) BETWEEN date('" +formatter.format(fromC.getTime())+ "') AND date('" +formatter.format(untilC.getTime())+ "'))");
             }
-            String sort = "";
-            switch (sortEnum)
-            {
-                case Ascending:
-                    sort = " ASC ";
-                    break;
-                case Descending:
-                    sort = " DESC ";
-                    break;
+            String sort = " DESC ";
+            if(sortEnum!=null) {
+                switch (sortEnum) {
+                    case Ascending:
+                        sort = " ASC ";
+                        break;
+                    case Descending:
+                        sort = " DESC ";
+                        break;
+                    default:
+                        sort = " DESC ";
+                }
             }
             OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
                     new String[]{
@@ -1228,18 +1241,33 @@ class AssemblyCursor extends CursorWrapper{
         return orderAssemblies;
     }
 
-    public ArrayList<Order> getOrdersByOrderStatus (OrderStatus orderStatus)
+    public ArrayList<Order> getOrdersByOrderStatus (OrderStatus orderStatus, SortDB sortDB)
     {
         ArrayList<Order> list = new ArrayList<>();
-        String selection = OrdersTable.Columns.STATUS_ID + " = ? ";
-        String selectionArgs[] = new String[]{Integer.toString(orderStatus.getId())};
-        OrderCursor cursor = new OrderCursor(db.query(OrdersTable.NAME,
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                "date("+OrdersTable.Columns.DATE+") DESC"));
+        String sort = "";
+        switch (sortDB)
+        {
+            case Ascending:
+                sort = " ASC ";
+                break;
+            case Descending:
+                sort = " DESC ";
+                break;
+        }
+
+        OrderCursor cursor = new OrderCursor(db.rawQuery(
+
+                "select *, substr(date, 7,4) || '-' || \n" +
+                        "                          substr(date, 4, 2)|| '-' ||\n" +
+                        "                          substr(date, 1, 2) as proper_date\n" +
+                        "from orders\n" +
+                        "where status_id = " + String.valueOf(orderStatus.getId()) + "\n" +
+                        "Order by proper_date " + sort + ", " + OrdersTable.Columns.ID + " " + sort
+
+                ,null
+        ));
+
+
         while(cursor.moveToNext())
         {
             list.add(cursor.getOrder());
@@ -1247,6 +1275,8 @@ class AssemblyCursor extends CursorWrapper{
         cursor.close();
         return list;
     }
+
+
 
     public InsertResponse insertOrder (Customer customer, ArrayList<Assembly> assemblies, ArrayList<Integer> qtys)
     {
@@ -1357,6 +1387,110 @@ class AssemblyCursor extends CursorWrapper{
     //---------------------------------------------------------------------------------------
     //endregion
 
+
+    public ArrayList<Product> getAllRequiredProductsToConfirmAll ()
+    {
+        ProductCursor cursor = new ProductCursor(db.rawQuery(
+
+                "select id, category_id, description, price, -(tempProducts.qty - tempProducts.QtyRequired) AS qty\n" +
+                        "from\n" +
+                        "(\n" +
+                        "select p.*, SUM(oa.qty * ap.qty) AS QtyRequired\n" +
+                        "from orders o\n" +
+                        "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                        "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                        "inner join products p ON (ap.product_id = p.id)\n" +
+                        "group by p.id\n" +
+                        "having (p.qty - QtyRequired)<0\n" +
+                        ") as tempProducts"
+
+                ,null));
+
+        ArrayList<Product> products = new ArrayList<Product>();
+        while(cursor.moveToNext())
+        {
+            products.add(cursor.getProduct());
+        }
+        cursor.close();
+        return products;
+    }
+
+    public ArrayList<MonthSale> getAllMonthSales ()
+    {
+        MonthSaleCursor cursor = new MonthSaleCursor(db.rawQuery(
+                "select o.date, substr(date, 7,4) || '-' || \n" +
+                        "  substr(date, 4, 2)|| '-' ||\n" +
+                        "  substr(date, 1, 2) as proper_date, SUM(p.price * ap.qty * oa.qty) AS total\n" +
+                        "from orders o\n" +
+                        "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                        "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                        "inner join products p ON (ap.product_id = p.id)\n" +
+                        "where o.status_id NOT IN (0, 1)\n" +
+                        "\n" +
+                        "group by strftime('%m-%Y', proper_date)\n" +
+                        "order by proper_date desc", null
+        ));
+        ArrayList<MonthSale> list = new ArrayList<MonthSale>();
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getMonthSale());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public ArrayList<Order> getOrdersByMonthSale(Calendar calendar)
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("MM-yyyy");
+        OrderCursor cursor = new OrderCursor(db.rawQuery(
+
+                "select o.*, substr(date, 7,4) || '-' || \n" +
+                        "  substr(date, 4, 2)|| '-' ||\n" +
+                        "  substr(date, 1, 2) as proper_date, SUM(p.price * ap.qty * oa.qty) AS total\n" +
+                        "from orders o\n" +
+                        "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                        "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                        "inner join products p ON (ap.product_id = p.id)\n" +
+                        "where o.status_id NOT IN (0, 1)\n" +
+                        "group by o.id\n" +
+                        "\n" +
+                        "having strftime('%m-%Y', proper_date) =  '" + formatter.format(calendar.getTime()) + "' "+
+                        "order by proper_date desc"
+
+                ,null
+        ));
+        ArrayList<Order> list = new ArrayList<Order>();
+        while (cursor.moveToNext())
+        {
+            list.add(cursor.getOrder());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public int getTotalByOrder (Order order)
+    {
+        int total = 0;
+
+        Cursor cursor = new CursorWrapper(db.rawQuery(
+
+                "select o.*, SUM(p.price * ap.qty * oa.qty ) AS total\n" +
+                        "from orders o\n" +
+                        "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                        "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                        "inner join products p ON (ap.product_id = p.id)\n" +
+                        "where o.id = " + String.valueOf(order.getId())
+
+                , null
+        ));
+        if(cursor.moveToNext())
+        {
+            total = cursor.getInt(cursor.getColumnIndex("total"));
+        }
+        cursor.close();
+
+        return total;
+    }
 }
 
 

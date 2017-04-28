@@ -45,7 +45,9 @@
         <activity android:name=".android.compustore.CustomersModifyActivity" />
         <activity android:name=".android.compustore.OrdersInsertActivity" />
         <activity android:name=".android.compustore.OrdersModifyActivity" />
-        <activity android:name=".android.compustore.OrderSearchAssemblyActivity"></activity>
+        <activity android:name=".android.compustore.OrderSearchAssemblyActivity" />
+        <activity android:name=".android.compustore.OrderSimulatorActivity" />
+        <activity android:name=".android.compustore.SalesSummaryActivity"></activity>
     </application>
 
 </manifest>
