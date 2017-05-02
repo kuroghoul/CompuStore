@@ -18,7 +18,9 @@ import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Assembly;
+import com.fiuady.compustore.db.AssemblyProducts;
 import com.fiuady.compustore.db.Inventory;
+import com.fiuady.compustore.db.Product;
 
 
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogtagdelete";
     private static String dialogTagInsert = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogtaginsert";
     private static String dialogTagAddStock = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogAddStock";
+    static String dialogProductListTag = "com.fiuady.compustore.android.compustore.assembliesactivity.dialogProductListTag";
     public static final int CODE_INSERT_ASSEMBLY = 0;
     public static final int CODE_MODIFY_ASSEMBLY = 2;
 
@@ -93,6 +96,8 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
 
         private TextView txtDescription;
         private TextView options;
+        private Assembly assembly;
+
 
         public AssemblyHolder (View itemView)
         {
@@ -106,16 +111,34 @@ public class AssembliesActivity extends AppCompatActivity implements DialogConfi
 
         public void bindAssembly(Assembly assembly)
         {
-
+            this.assembly = assembly;
             txtDescription.setText(assembly.getDescription());
-
-
-
         }
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(AssembliesActivity.this, "Ensamble: " + txtDescription.getText(), Toast.LENGTH_SHORT).show();
+            ArrayList<Integer> productsIdList = new ArrayList<Integer>();
+            ArrayList<AssemblyProducts>  assemblyProducts = inventory.getAssemblyProductsById(assembly.getId());
+            //ArrayList<Product> products = new ArrayList<Product>();
+            for (AssemblyProducts aP : assemblyProducts)
+            {
+                //products.add(inventory.getProductById(aP.getProductId()));
+                productsIdList.add(aP.getProductId());
+            }
+
+
+
+            Bundle args = new Bundle();
+            Bundle save = new Bundle();
+            save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
+
+            args.putString(DialogProductList.ARG_TITLE,"Productos");
+            args.putString(DialogProductList.ARG_BTN_POSITIVE,"Ok");
+            args.putBundle(DialogProductList.ARG_SAVE_DATA, save);
+            args.putIntegerArrayList(DialogProductList.ARG_PRODUCT_ID_LIST, productsIdList);
+
+            DialogProductList dialogProductList = DialogProductList.newInstance(dialogProductListTag, args);
+            dialogProductList.show(getSupportFragmentManager(), dialogProductListTag);
         }
 
 

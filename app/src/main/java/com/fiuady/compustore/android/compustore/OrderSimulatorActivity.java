@@ -1,9 +1,11 @@
 package com.fiuady.compustore.android.compustore;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fiuady.compustore.R;
 import com.fiuady.compustore.db.Customer;
@@ -96,11 +99,14 @@ public class OrderSimulatorActivity extends AppCompatActivity {
         spinnerSort = (Spinner)findViewById(R.id.orderSimulatorActivity_sort_spinner);
         spinnerSort.setAdapter(new ArrayAdapter<String>(this, R.layout.spinner_item_small, spinnerSortStrings));
 
-        ordersList = inventory.getOrdersByCustomerAndOrderStatus2(customers.get(spinnerC.getSelectedItemPosition()), pendiente, null, null, Inventory.SortDB.Descending);
+        //ordersList = inventory.getOrdersByCustomerAndOrderStatus2(customers.get(spinnerC.getSelectedItemPosition()), pendiente, null, null, Inventory.SortDB.Descending);
+        ordersList = new ArrayList<Order>();
         recyclerView=(RecyclerView)findViewById(R.id.orderSimulatorActivity_orders_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new OrderAdapter(ordersList, this);
         recyclerView.setAdapter(adapter);
+        //adapter = new OrderAdapter(ordersList, this);
+        //recyclerView.setAdapter(adapter);
 
 
 
@@ -121,10 +127,20 @@ public class OrderSimulatorActivity extends AppCompatActivity {
                     recyclerView.setAdapter(adapter);
                     break;}
                 case R.id.orderSimulatorActivity_totalSale_radio:{
+                    ordersList = inventory.getOrdersPendingByTotal();
+                    adapter = new OrderAdapter(ordersList, OrderSimulatorActivity.this);
+                    recyclerView.setAdapter(adapter);
                     spinnerC.setEnabled(false);
                     spinnerSort.setEnabled(false);
                     break;}
             }
+
+            inventory.finishSimulation();
+            if (ordersList.isEmpty())
+            {
+                Toast.makeText(OrderSimulatorActivity.this, "No hay órdenes pendientes para la configuración seleccionada", Toast.LENGTH_SHORT).show();
+            }
+
         }
     });
 
@@ -174,6 +190,18 @@ public class OrderSimulatorActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     });
+        spinnerC.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ordersList.clear();
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         filterGroup.check(R.id.orderSimulatorActivity_customers_radio);
 
     }
@@ -198,7 +226,9 @@ public class OrderSimulatorActivity extends AppCompatActivity {
         private TextView txtStatus;
         private TextView txtDate;
         private Order order;
-
+        private CardView cardView;
+        ArrayList<Product> remainingProducts;
+        ArrayList<Product> readyProducts;
 
 
         public OrderHolder (View itemView)
@@ -209,6 +239,7 @@ public class OrderSimulatorActivity extends AppCompatActivity {
             txtClient=(TextView)itemView.findViewById(R.id.order_client_text);
             txtStatus=(TextView)itemView.findViewById(R.id.order_status_text);
             txtDate=(TextView)itemView.findViewById(R.id.order_date_text);
+            cardView = (CardView) itemView.findViewById(R.id.order_cardView);
 
 
         }
@@ -219,6 +250,26 @@ public class OrderSimulatorActivity extends AppCompatActivity {
             txtClient.setText(order.getCustomer().getFullName());
             txtStatus.setText(order.getOrderStatus().getDescription());
             txtDate.setText(formatter.format(order.getCalendar().getTime()));
+
+            inventory.startSimulation(order);
+            inventory.stepSimulation();
+
+            remainingProducts = inventory.getRemainingProductsSimulation();
+            readyProducts = inventory.getReadyProductsSimulation();
+
+            if (remainingProducts.isEmpty())
+            {
+                cardView.setBackgroundColor(Color.GREEN);
+            }
+            else if (readyProducts.isEmpty())
+            {
+                cardView.setBackgroundColor(Color.RED);
+            }
+            else
+            {
+                cardView.setBackgroundColor(Color.YELLOW);
+            }
+
         }
 
 
@@ -226,7 +277,7 @@ public class OrderSimulatorActivity extends AppCompatActivity {
         public void onClick(View v) {
 
             ArrayList<Integer> productsIdList = new ArrayList<Integer>();
-            for (Product product :inventory.getAllProducts())
+            for (Product product :remainingProducts)
             {
                 productsIdList.add(product.getId());
             }
@@ -235,7 +286,7 @@ public class OrderSimulatorActivity extends AppCompatActivity {
             Bundle save = new Bundle();
             save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
 
-            args.putString(DialogProductList.ARG_TITLE,"Productos");
+            args.putString(DialogProductList.ARG_TITLE,"Productos faltantes");
             args.putString(DialogProductList.ARG_BTN_POSITIVE,"Ok");
             args.putBundle(DialogProductList.ARG_SAVE_DATA, save);
             args.putIntegerArrayList(DialogProductList.ARG_PRODUCT_ID_LIST, productsIdList);
@@ -266,6 +317,7 @@ public class OrderSimulatorActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final OrderSimulatorActivity.OrderHolder holder, int position) {
+
             holder.bindOrder(orders1.get(position));
 
         }

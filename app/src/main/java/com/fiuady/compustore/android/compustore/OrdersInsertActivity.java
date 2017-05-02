@@ -330,7 +330,6 @@ public class OrdersInsertActivity extends AppCompatActivity implements DialogCon
 
             }
 
-            Toast.makeText(OrdersInsertActivity.this, "Hola! resultCode OK" + id, Toast.LENGTH_SHORT).show();
         }
     }
 

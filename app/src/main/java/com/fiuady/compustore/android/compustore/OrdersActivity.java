@@ -1,14 +1,18 @@
 package com.fiuady.compustore.android.compustore;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -290,6 +294,8 @@ public class OrdersActivity extends AppCompatActivity implements DialogDatePicke
         private TextView options;
         private String fullName;
         private String changelog;
+        private Context context;
+
 
         public OrderHolder (View itemView)
         {
@@ -303,18 +309,45 @@ public class OrdersActivity extends AppCompatActivity implements DialogDatePicke
 
         }
 
-        public void bindOrder(Order order)
+        public void bindOrder(Order order, Context context)
         {
             txtClient.setText(order.getCustomer().getFullName());
             txtStatus.setText(order.getOrderStatus().getDescription());
             txtDate.setText(formatter.format(order.getCalendar().getTime()));
             changelog = order.getChangeLog();
+            this.context = context;
         }
 
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(OrdersActivity.this, changelog, Toast.LENGTH_SHORT).show();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder( context);
+
+
+            LayoutInflater inflater = getLayoutInflater();
+            final View view = inflater.inflate(R.layout.dialog_show_text,null);
+
+            TextView textView = (TextView)view.findViewById(R.id.dialog_text_changelog);
+            if (changelog==null)
+            {
+                textView.setText("Sin registros");
+            }
+            else {
+                textView.setText(changelog);
+            }
+            textView.setMovementMethod(new ScrollingMovementMethod());
+
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setView(view);
+            builder.create().show();
+
         }
 
         public TextView getTxtClient() {
@@ -337,7 +370,7 @@ public class OrdersActivity extends AppCompatActivity implements DialogDatePicke
 
         @Override
         public void onBindViewHolder(final OrdersActivity.OrderHolder holder, int position) {
-            holder.bindOrder(orders1.get(position));
+            holder.bindOrder(orders1.get(position), context);
 
             holder.getOptions().setOnClickListener(new View.OnClickListener() {
                 @Override

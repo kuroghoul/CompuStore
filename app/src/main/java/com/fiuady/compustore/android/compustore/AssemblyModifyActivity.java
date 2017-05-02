@@ -42,6 +42,7 @@ public class AssemblyModifyActivity extends AppCompatActivity implements DialogC
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.dialogtagdelete";
     private static String dialogTagQty = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.dialogQty";
 
+
     private static String KEY_PRODUCT_LIST_ID = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListId";
     private static String KEY_PRODUCT_LIST_QTY = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListQty";
 

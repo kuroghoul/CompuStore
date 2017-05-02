@@ -21,21 +21,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fiuady.compustore.R;
+import com.fiuady.compustore.db.AssemblyProducts;
 import com.fiuady.compustore.db.Inventory;
 import com.fiuady.compustore.db.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssemblyInsertActivity extends AppCompatActivity implements DialogConfirm.DialogConfirmListener{
+public class AssemblyInsertActivity extends AppCompatActivity implements DialogConfirm.DialogConfirmListener, DialogNumberPicker.DialogNumberPickerListener{
 
     public static final int CODE_SEARCH_PRODUCT = 1;
     private static String KEY_PRODUCT_LIST_ID = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListId";
     private static String KEY_PRODUCT_LIST_QTY = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.ProductListQty";
     private static String dialogSaveDataAdapterPosition = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.dialogsavedataadapterposition";
     private static String dialogTagDelete = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.dialogtagdelete";
+    private static String dialogTagQty = "com.fiuady.compustore.android.compustore.AssemblyInsertActivity.dialogQty";
 
-    Inventory inventory;
+    private Inventory inventory;
 
     private RecyclerView recyclerView;
     private AssemblyInsertActivity.ProductsAdapter adapter;
@@ -43,6 +45,9 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
     private ArrayList<Integer> productListId; // Used to restore the recyclerView on rotation
     private ArrayList<Integer> productQty;
     private Context context;
+    private static int maxQty = 999;
+    private ArrayList<AssemblyProducts> assemblyProducts;
+
 
 
     @Override
@@ -103,7 +108,7 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
 
         recyclerView=(RecyclerView)findViewById(R.id.assemblyProducts_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AssemblyInsertActivity.ProductsAdapter(productList, this);
+        adapter = new AssemblyInsertActivity.ProductsAdapter(productList, productQty, this);
         recyclerView.setAdapter(adapter);
 
     }
@@ -123,8 +128,10 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
         private TextView txtCategory;
         private TextView txtPrice;
         private TextView txtQty;
+        private TextView txtQtyTag;
         private TextView options;
         private int id;
+        private int qty;
 
         public ProductHolder (View itemView)
         {
@@ -134,6 +141,7 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
             txtCategory=(TextView)itemView.findViewById(R.id.product_category_text);
             txtPrice=(TextView)itemView.findViewById(R.id.product_price_text);
             txtQty=(TextView)itemView.findViewById(R.id.product_qty_text);
+            txtQtyTag = (TextView)itemView.findViewById(R.id.product_qty_tag);
             options=(TextView)itemView.findViewById(R.id.product_options);
 
             options.setOnClickListener(new View.OnClickListener() {
@@ -149,7 +157,17 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.me_modify:{
+                                    Bundle save = new Bundle();
+                                    save.putInt(dialogSaveDataAdapterPosition, getAdapterPosition());
+                                    String message = "Seleccionar cantidad";
+                                    String positivetxt = getString(R.string.dialogNumberPicker_products_addStock_positivebtn);
+                                    String negativetxt = getString(R.string.dialogNumberPicker_products_addStock_negativebtn);
+                                    int min = 1;
+                                    int max = maxQty;
 
+
+                                    DialogNumberPicker dialogNumberPicker = DialogNumberPicker.newInstance(message, positivetxt, negativetxt, min, max, save);
+                                    dialogNumberPicker.show(getSupportFragmentManager(),dialogTagQty);
                                     break;}
                                 case R.id.me_delete: {
                                     Bundle save = new Bundle();
@@ -169,13 +187,16 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
 
         }
 
-        public void bindProduct(Product product)
+        public void bindProduct(Product product, int qty)
         {
             id = product.getId();
+            this.qty = qty;
             txtDescription.setText(product.getDescription());
             txtCategory.setText(product.getProductCategory().getDescription());
             txtPrice.setText(Integer.toString(product.getPrice()));
-            txtQty.setText(Integer.toString(product.getQty()));
+            //txtQty.setText(Integer.toString(product.getQty()));
+            txtQty.setText(String.valueOf(qty));
+            txtQtyTag.setText("Cantidad");
         }
 
         @Override
@@ -211,16 +232,18 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
 
     private class ProductsAdapter extends RecyclerView.Adapter<AssemblyInsertActivity.ProductHolder>
     {
-        private List<Product> products;
+        private ArrayList<Product> products;
+        private ArrayList<Integer> qtys;
         private Context context;
-        public ProductsAdapter(List<Product> products, Context context) {
+        public ProductsAdapter(ArrayList<Product> products, ArrayList<Integer> qtys, Context context) {
             this.products = products;
+            this.qtys = qtys;
             this.context = context;
         }
 
         @Override
         public void onBindViewHolder(final AssemblyInsertActivity.ProductHolder holder, final int position) {
-            holder.bindProduct(products.get(position));
+            holder.bindProduct(products.get(position), qtys.get(position));
 
         }
 
@@ -252,8 +275,8 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        productListId.clear();
-        productList.clear();
+        //productListId.clear();
+        //productList.clear();
         productListId = savedInstanceState.getIntegerArrayList(KEY_PRODUCT_LIST_ID);
         productQty = savedInstanceState.getIntegerArrayList(KEY_PRODUCT_LIST_QTY);
         if (productList != null) {
@@ -262,7 +285,8 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
             }
 
         }
-
+        adapter = new AssemblyInsertActivity.ProductsAdapter(productList, productQty, this);
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -282,7 +306,6 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
 
             }
 
-            Toast.makeText(AssemblyInsertActivity.this, "Hola! resultCode OK" + id, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -328,5 +351,19 @@ public class AssemblyInsertActivity extends AppCompatActivity implements DialogC
         }
 
 
+    }
+
+    @Override
+    public void onDialogNumberPickerPositiveClick(DialogFragment dialog, int value) {
+        Bundle save = ((DialogNumberPicker)dialog).getSavedData();
+        int position = save.getInt(dialogSaveDataAdapterPosition);
+        productQty.set(position,value);
+        adapter.notifyDataSetChanged();
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onDialogNumberPickerNegativeClick(DialogFragment dialog, int value) {
+        dialog.dismiss();
     }
 }

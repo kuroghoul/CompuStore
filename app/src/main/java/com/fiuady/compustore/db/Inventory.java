@@ -1491,6 +1491,132 @@ class AssemblyCursor extends CursorWrapper{
 
         return total;
     }
+
+
+public ArrayList<Order> getOrdersPendingByTotal ()
+{
+
+    OrderCursor cursor = new OrderCursor(db.rawQuery(
+
+            "SELECT o.*, SUM(oa.qty * ap.qty * p.price) AS total_cost\n" +
+                    "FROM orders o\n" +
+                    "INNER JOIN order_assemblies oa ON (oa.id = o.id)\n" +
+                    "INNER JOIN assemblies a ON (oa.assembly_id = a.id)\n" +
+                    "INNER JOIN assembly_products ap ON (a.id = ap.id)\n" +
+                    "INNER JOIN products p ON (ap.product_id = p.id)\n" +
+                    "GROUP BY o.id\n" +
+                    "ORDER BY total_cost DESC\n"
+
+            ,null
+    ));
+    ArrayList<Order> list = new ArrayList<Order>();
+    while (cursor.moveToNext())
+    {
+        Order order = cursor.getOrder();
+        if(order.getOrderStatus().getId()==0)
+        {
+            list.add(order);
+        }
+
+    }
+    cursor.close();
+    return list;
+}
+
+
+public void startSimulation (Order order)
+{
+
+
+    db.execSQL(
+                    "insert or ignore into tmp_products_stock (id, category_id, description, price, qty)\n" +
+                    "select p.*\n" +
+                    "from orders o\n" +
+                    "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                    "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                    "inner join products p ON (ap.product_id = p.id)\n" +
+                    "where o.id = " + String.valueOf(order.getId()) + "\n" +
+                    "group by p.id"
+
+    );
+    db.execSQL("delete from tmp_products_requirements");
+    db.execSQL(
+                    "insert or ignore into tmp_products_requirements (id, category_id, description, price, qty)\n" +
+                    "select p.id, p.category_id, p.description, p.price, SUM(ap.qty * oa.qty) AS qty\n" +
+                    "from orders o\n" +
+                    "inner join order_assemblies oa ON (o.id = oa.id)\n" +
+                    "inner join assembly_products ap ON (ap.id = oa.assembly_id)\n" +
+                    "inner join products p ON (ap.product_id = p.id)\n" +
+                    "where o.id = " + String.valueOf(order.getId()) + "\n" +
+                    "group by p.id"
+
+    );
+
+}
+
+public void finishSimulation ()
+{
+    db.execSQL("delete from tmp_products_stock");
+    db.execSQL("delete from tmp_products_requirements");
+}
+
+
+public ArrayList<Product> getReadyProductsSimulation ()
+{
+    ArrayList<Product> products = new ArrayList<>();
+
+    ProductCursor cursor = new ProductCursor(db.rawQuery(
+
+            "SELECT *\n" +
+                    "FROM tmp_products_stock"
+            , null
+    ));
+
+    while(cursor.moveToNext())
+    {
+        Product product = cursor.getProduct();
+        if(product.getQty()>=0)
+        {
+            products.add(product);
+        }
+    }
+    cursor.close();
+    return products;
+}
+
+public ArrayList<Product> getRemainingProductsSimulation ()
+{
+    ArrayList<Product> products = new ArrayList<>();
+
+    ProductCursor cursor = new ProductCursor(db.rawQuery(
+
+            "SELECT *\n" +
+                    "FROM tmp_products_stock"
+            , null
+    ));
+
+    while(cursor.moveToNext())
+    {
+        Product product = cursor.getProduct();
+        if(product.getQty()<0)
+        {
+            products.add(product);
+        }
+    }
+    cursor.close();
+    return products;
+}
+
+public void stepSimulation()
+{
+    db.execSQL(
+
+            "UPDATE tmp_products_stock\n" +
+                    "SET qty = qty - (SELECT tpr.qty FROM tmp_products_requirements tpr WHERE tpr.id = id)"
+    );
+}
+
+
 }
 
 

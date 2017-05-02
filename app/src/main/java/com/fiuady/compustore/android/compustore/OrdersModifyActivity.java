@@ -333,7 +333,6 @@ public class OrdersModifyActivity extends AppCompatActivity implements DialogNum
 
             }
 
-            Toast.makeText(OrdersModifyActivity.this, "Hola! resultCode OK" + id, Toast.LENGTH_SHORT).show();
         }
     }
     @Override

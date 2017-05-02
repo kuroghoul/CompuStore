@@ -52,3 +52,19 @@ CREATE TABLE [order_assemblies](
     [assembly_id] INTEGER NOT NULL REFERENCES assemblies([id]),
     [qty] INTEGER NOT NULL,
     UNIQUE([id], [assembly_id]));
+
+CREATE TABLE [tmp_products_stock](
+    [id] INTEGER PRIMARY KEY,
+    [category_id] INTEGER NOT NULL REFERENCES product_categories([id]),
+    [description] TEXT NOT NULL,
+    [price] INTEGER NOT NULL,
+    [qty] INTEGER NOT NULL,
+    CHECK(price >= 0));
+
+CREATE TABLE [tmp_products_requirements](
+    [id] INTEGER PRIMARY KEY,
+    [category_id] INTEGER NOT NULL REFERENCES product_categories([id]),
+    [description] TEXT NOT NULL,
+    [price] INTEGER NOT NULL,
+    [qty] INTEGER NOT NULL,
+    CHECK(price >= 0));
